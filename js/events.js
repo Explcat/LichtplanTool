@@ -106,9 +106,20 @@ toggleModeButton.addEventListener('click', function() {
   isEditMode = !isEditMode;
   toggleModeButton.textContent = isEditMode ? 'Wechsel zu Read Mode' : 'Wechsel zu Edit Mode';
   editSzenenameBtn.style.display = isEditMode ? 'inline-block' : 'none';
+  // Update the new scene and delete scene buttons
+  document.getElementById('newSzene').style.display = isEditMode ? 'inline-block' : 'none';
+  document.getElementById('deleteSzene').style.display = isEditMode ? 'inline-block' : 'none';
+  
   // Update the notes textarea readOnly property
   document.getElementById('notes').readOnly = !isEditMode;
   updatePictureControls();
+
+  // Update pointer events for LED slider in section A
+  const ledSliderA = document.getElementById('led-slider-A');
+  if (ledSliderA) {
+    ledSliderA.style.pointerEvents = isEditMode ? 'auto' : 'none';
+  }
+  
   renderScene();
 });
 
@@ -234,3 +245,28 @@ initLEDSlider('led-slider-A', 0, true);             // Editable
 initLEDSlider('led-slider-B', 0, false);            // Read-only
 loadJsonDB();
 updatePictureControls();
+
+document.addEventListener('keydown', function(event) {
+  // Only process keyboard events in read mode
+  if (!isEditMode) {
+    if (event.key === 'ArrowRight') {
+      // Move to next scene
+      saveSnapshot(true);
+      if (currentSceneIndex < db.scenes.length - 1) {
+        currentSceneIndex++;
+        renderScene();
+      } else {
+        alert('Keine nächste Szene vorhanden.');
+      }
+    } else if (event.key === 'ArrowLeft') {
+      // Move to previous scene
+      saveSnapshot(true);
+      if (currentSceneIndex > 0) {
+        currentSceneIndex--;
+        renderScene();
+      } else {
+        alert('Bereits bei der ersten Szene.');
+      }
+    }
+  }
+});
