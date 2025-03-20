@@ -1,5 +1,8 @@
 /*********************** Event Bindings & Mode Handling ************************/
 
+// Global variable for music items (if not already defined)
+let musicItems = [];
+
 // DOM Elements used in events
 const toggleModeButton = document.getElementById('toggleMode');
 const editSzenenameBtn = document.getElementById('editSzenenameBtn');
@@ -70,6 +73,29 @@ pictureFileInput.addEventListener('change', function(event) {
   saveJsonDB();
 });
 
+/*********************** Music Section Events ************************/
+// When the "Add Music" button is clicked, open the hidden file input.
+document.getElementById('addMusicBtn').addEventListener('click', function(){
+  document.getElementById('musicFileInput').click();
+});
+
+// When a music file is selected, validate and add it to the current scene.
+document.getElementById('musicFileInput').addEventListener('change', function(event){
+  const file = event.target.files[0];
+  if (!file) return;
+ 
+  // Limit to 5 music items
+  if (musicItems.length >= 5) {
+    alert('Maximal 5 Musikdateien sind erlaubt.');
+    return;
+  }
+  // Construct local URL: files are assumed to be in the /szenenmusik folder
+  const fileUrl = 'szenenmusik/' + file.name;
+  const fileName = file.name;
+  musicItems.push({ fileUrl, fileName, audio: null });
+  renderMusicList();
+});
+
 /*********************** Mode & Snapshot Handling ************************/
 /**
  * Saves the current scene snapshot.
@@ -95,6 +121,9 @@ function saveSnapshot(silent) {
 
   // Save spotlight (Verfolger) notes from textarea
   scene.verfolger = document.getElementById('verfolgerInput').value;
+  
+  // Save the current scene's music items.
+  scene.musik = musicItems;
 
   saveJsonDB();
   if (!silent) {
@@ -109,6 +138,9 @@ toggleModeButton.addEventListener('click', function() {
   // Update the new scene and delete scene buttons
   document.getElementById('newSzene').style.display = isEditMode ? 'inline-block' : 'none';
   document.getElementById('deleteSzene').style.display = isEditMode ? 'inline-block' : 'none';
+  
+  // Update the Add Music button display based on mode.
+  document.getElementById('addMusicBtn').style.display = isEditMode ? 'inline-block' : 'none';
   
   // Update the notes textarea readOnly property
   document.getElementById('notes').readOnly = !isEditMode;

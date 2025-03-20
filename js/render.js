@@ -1,10 +1,19 @@
 /*********************** Rendering Functions ************************/
 
 /**
- * Renders the current scene including LED grids, sliders, and spotlight notes.
+ * Renders the current scene including LED grids, sliders, spotlight notes, and music.
  */
 function renderScene() {
   const currentScene = db.scenes[currentSceneIndex];
+
+  // Ensure default LED values if missing.
+  if (!currentScene.led || currentScene.led.length !== 24) {
+    currentScene.led = new Array(24).fill(false);
+  }
+  if (typeof currentScene.ledSlider !== 'number') {
+    currentScene.ledSlider = 0;
+  }
+
   document.getElementById('sceneNumber').textContent = currentScene.sceneNumber;
   szenenameDisplay.textContent = currentScene.sceneName;
   
@@ -54,7 +63,7 @@ function renderScene() {
   // Update LED slider for current scene
   const ledSliderA = document.getElementById('led-slider-A');
   if (ledSliderA && ledSliderA.noUiSlider) {
-    ledSliderA.noUiSlider.set(currentScene.ledSlider || 0);
+    ledSliderA.noUiSlider.set(currentScene.ledSlider);
     updateLEDSliderValue(ledSliderA.noUiSlider.get(), 'led-slider-value-A');
   }
 
@@ -78,6 +87,13 @@ function renderScene() {
   // Update spotlight (Verfolger) textarea value
   document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
   
+  // Load and render music for the current scene.
+  if (!currentScene.musik) {
+    currentScene.musik = [];
+  }
+  musicItems = currentScene.musik;
+  renderMusicList();
+
   // Update body background color based on mode
   document.body.style.backgroundColor = isEditMode ? '#ffffe0' : '#ffffff';
 }
@@ -114,4 +130,61 @@ function renderSceneList() {
 function updatePictureControls() {
   const addPictureBtn = document.getElementById('addPictureBtn');
   addPictureBtn.style.display = isEditMode ? 'inline-block' : 'none';
+}
+
+/**
+ * Renders the music list in the #musicList div.
+ */
+function renderMusicList() {
+  const musicList = document.getElementById('musicList');
+  musicList.innerHTML = '';
+  musicItems.forEach((item, index) => {
+    const musicDiv = document.createElement('div');
+    musicDiv.classList.add('music-item');
+    musicDiv.style.marginBottom = '5px';
+    
+    // Display filename
+    const fileLabel = document.createElement('span');
+    fileLabel.textContent = item.fileName + ' ';
+    musicDiv.appendChild(fileLabel);
+    
+    // Create Play button
+    const playBtn = document.createElement('button');
+    playBtn.textContent = 'Play';
+    musicDiv.appendChild(playBtn);
+    
+    // Create Stop button
+    const stopBtn = document.createElement('button');
+    stopBtn.textContent = 'Stop';
+    musicDiv.appendChild(stopBtn);
+    
+    // Create audio element if not already created
+    if (!item.audio) {
+      item.audio = new Audio(item.fileUrl);
+    }
+    
+    // Button event bindings
+    playBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      item.audio.play();
+    });
+    
+    stopBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      item.audio.pause();
+      item.audio.currentTime = 0;
+    });
+    
+    // Allow the whole music item div to toggle play/pause when clicked
+    musicDiv.addEventListener('click', function() {
+      if (item.audio.paused) {
+        item.audio.play();
+      } else {
+        item.audio.pause();
+        item.audio.currentTime = 0;
+      }
+    });
+    
+    musicList.appendChild(musicDiv);
+  });
 }

@@ -22,7 +22,8 @@ function createEmptyScene(sceneNumber) {
     pultRechts: { sectionA: new Array(12).fill(0) },
     led: new Array(24).fill(false),      // LED buttons for current scene
     ledSlider: 0,                        // LED slider value for current scene
-    verfolger: ''                        // Spotlight-Notizen
+    verfolger: '',                       // Spotlight-Notizen
+    musik: []                            // NEW: Array for music items in this scene
   };
 }
 
