@@ -1,9 +1,18 @@
-/* style.css */
 body {
   font-family: Arial, sans-serif;
   margin: 10px;
   padding: 0;
   background-color: #ffffff; /* Default background for READ mode */
+}
+
+/* NEW: Flex container for overall layout */
+#flex-container {
+  display: flex;
+}
+
+/* NEW: Wrap main content */
+#content-wrapper {
+  flex: 1;
 }
 
 /* Oberer Szenenbereich */
@@ -118,7 +127,7 @@ body {
 /* Kanalcontainer */
 .channel {
   display: inline-block;
-  margin-left: 35px;
+  margin-left: 25px;
   text-align: center;
 }
 .slider-label {
@@ -153,7 +162,8 @@ body {
 
 /* Szene-Liste am rechten Rand */
 #szenelist {
-  position: fixed;
+  /* Removed fixed positioning for flexbox layout */
+  /* position: fixed; */
   top: 0;
   right: 0;
   height: 100%;
@@ -236,7 +246,7 @@ body {
 /* Vertical noUiSlider */
 #led-slider-A,
 #led-slider-B {
-  width: 40px;
+  width: 14px;
   height: 150px;
 }
 
@@ -260,4 +270,37 @@ body {
 .readonly .noUi-target {
   pointer-events: none;
   opacity: 0.6;
+}
+
+/* LED Section (Mitte) - Updated Layout */
+#led-col {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+}
+#led-col > div {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #fafafa;
+  text-align: center;
+}
+
+/* Ensure the overall three-column layout for main content */
+#pult-links,
+#led-col,
+#pult-rechts {
+  display: inline-block;
+  vertical-align: top;
+  width: 37%;
+  box-sizing: border-box;
+  padding: 5px;
+}
+
+#led-col {
+  display: inline-block;
+  vertical-align: top;
+  width: 22%;
+  box-sizing: border-box;
+  padding: 5px;
 }
