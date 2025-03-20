@@ -1,0 +1,112 @@
+<!DOCTYPE html>  
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Lichtplan Prototyp – Production Ready mit Bildauswahl</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- noUiSlider CSS -->
+  <link rel="stylesheet" href="nouislider.min.css">
+</head>
+<body>
+  <!-- Oberer Szenenbereich: Anzeige der aktuellen Szene -->
+  <div id="szene-id">
+    <span class="scenenumer">Szene: <strong id="sceneNumber">1</strong></span>
+    <span id="szenenameDisplay">[Szenenname]</span>
+    <button id="editSzenenameBtn" style="display:none;">Edit</button>
+  </div>
+
+  <!-- Skip-Buttons -->
+  <div id="skipControls">
+    <button id="prevScene">Vorherige Szene</button>
+    <button id="nextScene">Nächste Szene</button>
+  </div>
+
+  <!-- Steuerungsbereich -->
+  <div id="controls">
+    <button id="toggleMode">Wechsel zu Edit Mode</button>
+    <button id="newSzene">Neue Szene einfügen</button>
+    <button id="deleteSzene">Szene löschen</button>
+  </div>
+
+  <div id="scenepicture">
+    <div id="currentPicture">
+      <img id="sceneImg" src="" alt="Aktuelles Szenenbild">
+      <!-- Bild-Auswahl: nur im Edit-Mode sichtbar -->
+      <button id="addPictureBtn" style="display:none;">Add Picture</button>
+      <!-- Hidden File Input -->
+      <input type="file" id="pictureFileInput" accept="image/jpeg" style="display:none;">
+    </div>
+    <div id="nextPictureLabel">nächste Szene</div>
+    <div id="nextPicture">
+      <img id="nextSceneImg" src="" alt="Nächstes Szenenbild">
+    </div>
+  </div>
+
+  <!-- Pult-Bereiche (links) -->
+  <div id="pult-links" class="pult">
+    <div id="links-sectionA">
+      <h4>Aktuelle Szene – <input type="text" id="currentSceneNameField" readonly></h4>
+      <div id="links-A"></div>
+    </div>
+    <div id="links-sectionB">
+      <h4>Nächste Szene – <input type="text" id="nextSceneNameField" readonly></h4>
+      <div id="links-B"></div>
+    </div>
+  </div>
+
+  <!-- Pult-Bereiche (rechts) -->
+  <div id="pult-rechts" class="pult">
+    <div id="rechts-sectionA">
+      <h4>Aktuelle Szene – <input type="text" id="currentSceneNameFieldRight" readonly></h4>
+      <div id="rechts-A"></div>
+    </div>
+    <div id="rechts-sectionB">
+      <h4>Nächste Szene – <input type="text" id="nextSceneNameFieldRight" readonly></h4>
+      <div id="rechts-B"></div>
+    </div>
+  </div>
+
+<!-- Bottom Row: 3 Columns (Notizen, LED, Verfolger) -->
+<div id="bottom-row">
+  <div class="bottom-column" id="notes-col">
+    <textarea id="notes" placeholder="Notizen zu dieser Szene..."></textarea>
+  </div>
+  <div class="bottom-column" id="led-col">
+    <div id="led-buttons">
+      <!-- LED buttons grid (4 rows x 6 columns) will be generated dynamically -->
+    </div>
+    <div id="led-slider-container">
+      <input type="range" id="led-slider" min="0" max="100" value="0">
+      <span id="led-slider-value">0%</span>
+    </div>
+  </div>
+  <div class="bottom-column" id="verfolger-col">
+    <textarea id="verfolgerInput" placeholder="Notizen für Spotlight..."></textarea>
+  </div>
+</div>
+
+
+  <!-- Snapshot Controls -->
+  <div id="snapshotControls">
+    <button id="saveSnapshot">Manuel speichern</button>
+    <button id="loadSnapshot"></button>
+  </div>
+
+  <!-- Export/Import Controls -->
+  <div id="fileControls">
+    <button id="exportBtn">Daten exportieren</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none;">
+    <button id="importBtn">Daten importieren</button>
+  </div>
+
+  <div id="szenelist"></div>
+
+  <!-- noUiSlider JS -->
+  <script src="nouislider.min.js"></script>
+  <!-- JavaScript Modules -->
+  <script src="js/globals.js"></script>
+  <script src="js/helpers.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/events.js"></script>
+</body>
+</html>

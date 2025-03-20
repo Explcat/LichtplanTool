@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!DOCTYPE html>  
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <title>Lichtplan Prototyp – Production Ready mit Bildauswahl</title>
   <link rel="stylesheet" href="style.css">
   <!-- noUiSlider CSS -->
- <link rel="stylesheet" href="nouislider.min.css">
+  <link rel="stylesheet" href="nouislider.min.css">
 </head>
 <body>
   <!-- Oberer Szenenbereich: Anzeige der aktuellen Szene -->
@@ -28,19 +28,19 @@
     <button id="deleteSzene">Szene löschen</button>
   </div>
 
-<div id="scenepicture">
-  <div id="currentPicture">
-    <img id="sceneImg" src="" alt="Aktuelles Szenenbild">
-    <!-- Bild-Auswahl: nur im Edit-Mode sichtbar -->
-    <button id="addPictureBtn" style="display:none;">Add Picture</button>
-    <!-- Hidden File Input -->
-    <input type="file" id="pictureFileInput" accept="image/jpeg" style="display:none;">
+  <div id="scenepicture">
+    <div id="currentPicture">
+      <img id="sceneImg" src="" alt="Aktuelles Szenenbild">
+      <!-- Bild-Auswahl: nur im Edit-Mode sichtbar -->
+      <button id="addPictureBtn" style="display:none;">Add Picture</button>
+      <!-- Hidden File Input -->
+      <input type="file" id="pictureFileInput" accept="image/jpeg" style="display:none;">
+    </div>
+    <div id="nextPictureLabel">nächste Szene</div>
+    <div id="nextPicture">
+      <img id="nextSceneImg" src="" alt="Nächstes Szenenbild">
+    </div>
   </div>
-  <div id="nextPictureLabel">nächste Szene</div>
-  <div id="nextPicture">
-    <img id="nextSceneImg" src="" alt="Nächstes Szenenbild">
-  </div>
-</div>
 
   <!-- Pult-Bereiche (links) -->
   <div id="pult-links" class="pult">
@@ -66,15 +66,36 @@
     </div>
   </div>
 
-  <!-- Notizen -->
-  <div id="notes" contenteditable="false">
-    Notizen zu dieser Szene...
+  <!-- Bottom Row: Notizen, LED & Slider (links) and Verfolger (rechts) -->
+  <div id="bottom-row">
+    <div id="bottom-left">
+      <!-- Notizen -->
+      <div id="notes" contenteditable="false">
+        Notizen zu dieser Szene...
+      </div>
+      <!-- LED Section -->
+      <div id="led">
+        <div id="led-buttons">
+          <!-- LED buttons grid (4 rows x 6 columns) will be generated dynamically -->
+        </div>
+        <div id="led-slider-container">
+          <input type="range" id="led-slider" min="0" max="100" value="0">
+          <span id="led-slider-value">0%</span>
+        </div>
+      </div>
+    </div>
+    <div id="bottom-right">
+      <!-- Verfolger: Textinput für Spotlight-Notizen -->
+      <div id="verfolger">
+        <input type="text" id="verfolgerInput" placeholder="Notizen für Spotlight...">
+      </div>
+    </div>
   </div>
 
   <!-- Snapshot Controls -->
   <div id="snapshotControls">
     <button id="saveSnapshot">Manuel speichern</button>
-   <button id="loadSnapshot"></button>
+    <button id="loadSnapshot"></button>
   </div>
 
   <!-- Export/Import Controls -->
@@ -84,7 +105,7 @@
     <button id="importBtn">Daten importieren</button>
   </div>
 
-<div id="szenelist"></div>
+  <div id="szenelist"></div>
 
   <!-- noUiSlider JS -->
   <script src="nouislider.min.js"></script>
@@ -145,6 +166,42 @@
       }
     }
 
+    /*********************** LED Section Setup ************************/
+    // Erzeugt das LED-Button-Raster (4 Reihen x 6 Spalten)
+    function initLEDButtons() {
+      const ledButtonsContainer = document.getElementById('led-buttons');
+      ledButtonsContainer.innerHTML = '';
+      for (let i = 0; i < 24; i++) {
+        const btn = document.createElement('button');
+        btn.classList.add('led-btn');
+        btn.dataset.index = i;
+        btn.style.width = '40px';
+        btn.style.height = '40px';
+        btn.style.margin = '2px';
+        btn.style.backgroundColor = 'white';
+        // Toggle LED-Status bei Klick (nur im Edit Mode)
+        btn.addEventListener('click', function() {
+          if (!isEditMode) return;
+          btn.classList.toggle('on');
+          if (btn.classList.contains('on')) {
+            btn.style.backgroundColor = 'green';
+          } else {
+            btn.style.backgroundColor = 'white';
+          }
+        });
+        ledButtonsContainer.appendChild(btn);
+        // Insert a line break after every 6 buttons
+        if ((i + 1) % 6 === 0) {
+          ledButtonsContainer.appendChild(document.createElement('br'));
+        }
+      }
+    }
+
+    // Aktualisiert den LED-Slider-Anzeigewert
+    function updateLEDSliderValue(value) {
+      document.getElementById('led-slider-value').textContent = value + '%';
+    }
+
     /*********************** Rendering Functions ************************/
     // Rendert die aktuelle Szene (Section A) und die nächste Szene (Section B – read-only).
     function renderScene() {
@@ -154,11 +211,11 @@
       notesDiv.innerHTML = currentScene.notes;
 
       // Bild: Falls ein Bild in der DB gespeichert ist, anzeigen; ansonsten leeres Bild.
-if (currentScene.image) {
-  sceneImg.src = currentScene.image;
-} else {
-  sceneImg.src = "";
-}
+      if (currentScene.image) {
+        sceneImg.src = currentScene.image;
+      } else {
+        sceneImg.src = "";
+      }
 
       // Aktuelle Szene (Section A) – in den Input-Feldern:
       document.getElementById('currentSceneNameField').value = currentScene.sceneName;
@@ -167,13 +224,13 @@ if (currentScene.image) {
       // Nächste Szene: Falls vorhanden, sonst Default-Werte.
       let nextScene = db.scenes[currentSceneIndex + 1] || {
         sceneName: "Keine nächste Szene",
-		image: "",
+        image: "",
         pultLinks: { sectionA: new Array(12).fill(0) },
         pultRechts: { sectionA: new Array(12).fill(0) }
       };
       document.getElementById('nextSceneNameField').value = nextScene.sceneName;
       document.getElementById('nextSceneNameFieldRight').value = nextScene.sceneName;
-	  document.getElementById('nextSceneImg').src = nextScene.image || "";
+      document.getElementById('nextSceneImg').src = nextScene.image || "";
 
       // Pult-Bereiche:
       // Section A zeigt die Fader der aktuellen Szene.
@@ -182,29 +239,48 @@ if (currentScene.image) {
       // Section B zeigt immer die Fader der nächsten Szene – read-only!
       createChannelSliders('links-B', nextScene.pultLinks.sectionA, true);
       createChannelSliders('rechts-B', nextScene.pultRechts.sectionA, true);
-    renderSceneList();
-	}
+      renderSceneList();
 
-function renderSceneList() {
-  const szenelistDiv = document.getElementById('szenelist');
-  szenelistDiv.innerHTML = "";
-  db.scenes.forEach((scene, index) => {
-    const item = document.createElement('div');
-    item.classList.add('szenelist-item');
-    if (index === currentSceneIndex) {
-      item.classList.add('current');
+      // Render LED Buttons: Setzt den Zustand (on/off) anhand des aktuellen DB-Werts.
+      const ledButtons = document.querySelectorAll('.led-btn');
+      ledButtons.forEach((btn, index) => {
+        if (currentScene.led && currentScene.led[index]) {
+          btn.classList.add('on');
+          btn.style.backgroundColor = 'green';
+        } else {
+          btn.classList.remove('on');
+          btn.style.backgroundColor = 'white';
+        }
+      });
+
+      // Update LED slider value
+      const ledSlider = document.getElementById('led-slider');
+      ledSlider.value = currentScene.ledSlider || 0;
+      updateLEDSliderValue(currentScene.ledSlider || 0);
+
+      // Update Verfolger (Spotlight-Notizen)
+      document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
     }
-    item.textContent = scene.sceneName;
-    // Bei Klick wechselt zur entsprechenden Szene.
-    item.addEventListener('click', function() {
-      saveSnapshot(true);
-      currentSceneIndex = index;
-      renderScene();
-    });
-    szenelistDiv.appendChild(item);
-  });
-}
 
+    function renderSceneList() {
+      const szenelistDiv = document.getElementById('szenelist');
+      szenelistDiv.innerHTML = "";
+      db.scenes.forEach((scene, index) => {
+        const item = document.createElement('div');
+        item.classList.add('szenelist-item');
+        if (index === currentSceneIndex) {
+          item.classList.add('current');
+        }
+        item.textContent = scene.sceneName;
+        // Bei Klick wechselt zur entsprechenden Szene.
+        item.addEventListener('click', function() {
+          saveSnapshot(true);
+          currentSceneIndex = index;
+          renderScene();
+        });
+        szenelistDiv.appendChild(item);
+      });
+    }
 
     /*********************** Szenenname Editing ************************/
     // Aktiviert das Editieren des Szenennamens.
@@ -242,38 +318,37 @@ function renderSceneList() {
       }
     });
 
-   /*********************** Bildauswahl ************************/
-// Update: Kontrolliere, ob im Edit-Mode der "Add Picture"-Button angezeigt wird.
-function updatePictureControls() {
-  addPictureBtn.style.display = isEditMode ? 'inline-block' : 'none';
-}
+    /*********************** Bildauswahl ************************/
+    // Update: Kontrolliere, ob im Edit-Mode der "Add Picture"-Button angezeigt wird.
+    function updatePictureControls() {
+      addPictureBtn.style.display = isEditMode ? 'inline-block' : 'none';
+    }
 
-// Beim Klick auf den Button wird das versteckte File-Input ausgelöst.
-addPictureBtn.addEventListener('click', function() {
-  pictureFileInput.click();
-});
+    // Beim Klick auf den Button wird das versteckte File-Input ausgelöst.
+    addPictureBtn.addEventListener('click', function() {
+      pictureFileInput.click();
+    });
 
-// Wenn eine Datei ausgewählt wird, prüfen wir Typ und Größe und laden sie als DataURL.
-pictureFileInput.addEventListener('change', function(event) {
-  const file = event.target.files[0];
-  if (!file) return;
-  // Check file type (only JPEG) and file size (max 10 MB)
-  if (file.type !== "image/jpeg") {
-    alert("Bitte nur JPEG-Bilder auswählen.");
-    return;
-  }
-  if (file.size > 10 * 1024 * 1024) {
-    alert("Dateigröße darf 10 MB nicht überschreiten.");
-    return;
-  }
-  // Instead of reading as DataURL, use the file name to build a local URL.
-  // Ensure that the image is already available in the 'szenenbilder' folder.
-  const localURL = "szenenbilder/" + file.name;
-  db.scenes[currentSceneIndex].image = localURL;
-  sceneImg.src = localURL;
-  saveJsonDB();
-});
-
+    // Wenn eine Datei ausgewählt wird, prüfen wir Typ und Größe und laden sie als DataURL.
+    pictureFileInput.addEventListener('change', function(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      // Check file type (only JPEG) and file size (max 10 MB)
+      if (file.type !== "image/jpeg") {
+        alert("Bitte nur JPEG-Bilder auswählen.");
+        return;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        alert("Dateigröße darf 10 MB nicht überschreiten.");
+        return;
+      }
+      // Instead of reading as DataURL, use the file name to build a local URL.
+      // Ensure that the image is already available in the 'szenenbilder' folder.
+      const localURL = "szenenbilder/" + file.name;
+      db.scenes[currentSceneIndex].image = localURL;
+      sceneImg.src = localURL;
+      saveJsonDB();
+    });
 
     /*********************** Mode & Snapshot Handling ************************/
     // Speichert den aktuellen Zustand der Szene; silent unterdrückt Alerts.
@@ -282,6 +357,22 @@ pictureFileInput.addEventListener('change', function(event) {
       scene.notes = notesDiv.innerHTML;
       scene.pultLinks.sectionA = collectValues('links-A');
       scene.pultRechts.sectionA = collectValues('rechts-A');
+
+      // Speichere LED-Zustände (true = on, false = off)
+      const ledState = [];
+      document.querySelectorAll('.led-btn').forEach(btn => {
+        ledState.push(btn.classList.contains('on'));
+      });
+      scene.led = ledState;
+
+      // Speichere LED-Slider-Wert
+      const ledSliderValue = document.getElementById('led-slider').value;
+      scene.ledSlider = parseInt(ledSliderValue);
+
+      // Speichere Verfolger (Spotlight-Notizen)
+      const verfolgerValue = document.getElementById('verfolgerInput').value;
+      scene.verfolger = verfolgerValue;
+
       saveJsonDB();
       if (!silent) {
         alert('Snapshot gespeichert!');
@@ -336,7 +427,7 @@ pictureFileInput.addEventListener('change', function(event) {
       }
     }
 
-    // Erzeugt eine leere Szene – speichert nur Faderwerte für Section A.
+    // Erzeugt eine leere Szene – speichert nur Faderwerte für Section A sowie LED, Slider und Verfolger.
     function createEmptyScene(sceneNumber) {
       return {
         sceneNumber: sceneNumber,
@@ -345,7 +436,10 @@ pictureFileInput.addEventListener('change', function(event) {
         notes: '',
         image: '',  // Bild als DataURL
         pultLinks: { sectionA: new Array(12).fill(0) },
-        pultRechts: { sectionA: new Array(12).fill(0) }
+        pultRechts: { sectionA: new Array(12).fill(0) },
+        led: new Array(24).fill(false),  // 24 LED-Buttons (false = off)
+        ledSlider: 0,                    // LED Slider Wert (0-100)
+        verfolger: ''                    // Spotlight-Notizen
       };
     }
 
@@ -450,7 +544,14 @@ pictureFileInput.addEventListener('change', function(event) {
     });
     document.getElementById('importFile').addEventListener('change', importData);
 
+    // LED Slider Event: Aktualisiert Anzeige beim Ziehen des Sliders
+    document.getElementById('led-slider').addEventListener('input', function() {
+      updateLEDSliderValue(this.value);
+    });
+
     /*********************** Initiale DB-Ladung ************************/
+    // Initialisiere LED-Buttons, falls nicht bereits vorhanden
+    initLEDButtons();
     loadJsonDB();
     // Beim initialen Laden Update der Bild-Controls
     updatePictureControls();
