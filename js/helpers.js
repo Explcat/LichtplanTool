@@ -1,4 +1,3 @@
-//helpers.js
 /*********************** Helper Functions ************************/
 
 /**
@@ -53,6 +52,7 @@ function createChannelSliders(containerId, values, readOnly = false) {
 
 /**
  * Initializes the LED button grid (4 rows x 6 columns).
+ * Each button is labeled with its number (1-24) and toggles its state on click.
  */
 function initLEDButtons() {
   const ledButtonsContainer = document.getElementById('led-buttons');
@@ -61,14 +61,11 @@ function initLEDButtons() {
     const btn = document.createElement('button');
     btn.classList.add('led-btn');
     btn.dataset.index = i;
-    btn.style.width = '40px';
-    btn.style.height = '40px';
-    btn.style.margin = '2px';
-    btn.style.backgroundColor = 'white';
-    // Toggle LED status on click (only in Edit Mode)
+    btn.textContent = i + 1; // Display button number (1 to 24)
+    // Toggle LED status on click – always responsive regardless of edit mode.
     btn.addEventListener('click', function() {
-      if (!isEditMode) return;
       btn.classList.toggle('on');
+      // Background color will update based on class (CSS handles .led-btn.on)
       btn.style.backgroundColor = btn.classList.contains('on') ? 'green' : 'white';
     });
     ledButtonsContainer.appendChild(btn);
@@ -77,6 +74,22 @@ function initLEDButtons() {
       ledButtonsContainer.appendChild(document.createElement('br'));
     }
   }
+}
+
+/**
+ * Initializes a vertical noUiSlider for the LED slider in the LED section.
+ */
+function initLEDSlider() {
+  const slider = document.getElementById('led-slider');
+  noUiSlider.create(slider, {
+    start: 0,
+    step: 1,
+    range: { min: 0, max: 100 },
+    orientation: 'vertical',
+    direction: 'rtl',
+    tooltips: true,
+    animate: false
+  });
 }
 
 /**

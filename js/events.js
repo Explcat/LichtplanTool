@@ -1,4 +1,3 @@
-//events.js
 /*********************** Event Bindings & Mode Handling ************************/
 
 // DOM Elements used in events
@@ -78,7 +77,8 @@ pictureFileInput.addEventListener('change', function(event) {
  */
 function saveSnapshot(silent) {
   const scene = db.scenes[currentSceneIndex];
-  scene.notes = document.getElementById('notes').innerHTML;
+  // Save notes from textarea
+  scene.notes = document.getElementById('notes').value;
   scene.pultLinks.sectionA = collectValues('links-A');
   scene.pultRechts.sectionA = collectValues('rechts-A');
 
@@ -89,10 +89,11 @@ function saveSnapshot(silent) {
   });
   scene.led = ledState;
 
-  // Save LED slider value
-  scene.ledSlider = parseInt(document.getElementById('led-slider').value);
-
-  // Save spotlight notes
+  // Save LED slider value using noUiSlider API
+  const ledSlider = document.getElementById('led-slider');
+  scene.ledSlider = parseInt(ledSlider.noUiSlider.get());
+  
+  // Save spotlight (Verfolger) notes from textarea
   scene.verfolger = document.getElementById('verfolgerInput').value;
 
   saveJsonDB();
@@ -105,7 +106,7 @@ toggleModeButton.addEventListener('click', function() {
   isEditMode = !isEditMode;
   toggleModeButton.textContent = isEditMode ? 'Wechsel zu Read Mode' : 'Wechsel zu Edit Mode';
   editSzenenameBtn.style.display = isEditMode ? 'inline-block' : 'none';
-  document.getElementById('notes').contentEditable = isEditMode;
+  document.getElementById('notes').readOnly = !isEditMode;
   updatePictureControls();
   renderScene();
 });
@@ -215,12 +216,17 @@ document.getElementById('importBtn').addEventListener('click', function() {
 document.getElementById('importFile').addEventListener('change', importData);
 
 /*********************** LED Slider Event ************************/
-document.getElementById('led-slider').addEventListener('input', function() {
-  updateLEDSliderValue(this.value);
-});
+// Use noUiSlider update event to update the displayed value
+const ledSlider = document.getElementById('led-slider');
+if (ledSlider && ledSlider.noUiSlider) {
+  ledSlider.noUiSlider.on('update', function(values, handle) {
+    updateLEDSliderValue(values[handle]);
+  });
+}
 
 /*********************** Initial Setup ************************/
-// Initialize LED buttons and load the database
+// Initialize LED buttons and vertical LED slider, then load the database and update picture controls.
 initLEDButtons();
+initLEDSlider();
 loadJsonDB();
 updatePictureControls();

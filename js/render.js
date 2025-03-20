@@ -1,4 +1,3 @@
-//render.js
 /*********************** Rendering Functions ************************/
 
 /**
@@ -8,7 +7,9 @@ function renderScene() {
   const currentScene = db.scenes[currentSceneIndex];
   document.getElementById('sceneNumber').textContent = currentScene.sceneNumber;
   szenenameDisplay.textContent = currentScene.sceneName;
-  document.getElementById('notes').innerHTML = currentScene.notes;
+  
+  // Update notes textarea value
+  document.getElementById('notes').value = currentScene.notes;
 
   // Update image if exists
   const sceneImg = document.getElementById('sceneImg');
@@ -49,12 +50,14 @@ function renderScene() {
     }
   });
 
-  // Update LED slider value
+  // Update LED slider value using noUiSlider API
   const ledSlider = document.getElementById('led-slider');
-  ledSlider.value = currentScene.ledSlider || 0;
-  updateLEDSliderValue(currentScene.ledSlider || 0);
+  if (ledSlider && ledSlider.noUiSlider) {
+    ledSlider.noUiSlider.set(currentScene.ledSlider || 0);
+    updateLEDSliderValue(ledSlider.noUiSlider.get());
+  }
 
-  // Update spotlight notes (Verfolger)
+  // Update spotlight (Verfolger) textarea value
   document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
 }
 

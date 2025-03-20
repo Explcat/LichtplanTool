@@ -15,11 +15,7 @@
     <button id="editSzenenameBtn" style="display:none;">Edit</button>
   </div>
 
-  <!-- Skip-Buttons -->
-  <div id="skipControls">
-    <button id="prevScene">Vorherige Szene</button>
-    <button id="nextScene">Nächste Szene</button>
-  </div>
+
 
   <!-- Steuerungsbereich -->
   <div id="controls">
@@ -41,7 +37,11 @@
       <img id="nextSceneImg" src="" alt="Nächstes Szenenbild">
     </div>
   </div>
-
+  <!-- Skip-Buttons -->
+  <div id="skipControls">
+    <button id="prevScene">Vorherige Szene</button>
+    <button id="nextScene">Nächste Szene</button>
+  </div>
   <!-- Pult-Bereiche (links) -->
   <div id="pult-links" class="pult">
     <div id="links-sectionA">
@@ -66,25 +66,25 @@
     </div>
   </div>
 
-<!-- Bottom Row: 3 Columns (Notizen, LED, Verfolger) -->
-<div id="bottom-row">
-  <div class="bottom-column" id="notes-col">
-    <textarea id="notes" placeholder="Notizen zu dieser Szene..."></textarea>
-  </div>
-  <div class="bottom-column" id="led-col">
-    <div id="led-buttons">
-      <!-- LED buttons grid (4 rows x 6 columns) will be generated dynamically -->
+  <!-- Bottom Row: Three Columns (Notizen, LED Section, Verfolger) -->
+  <div id="bottom-row">
+    <div class="bottom-column-left" id="notes-col">
+      <textarea id="notes" placeholder="Notizen zu dieser Szene..."></textarea>
     </div>
-    <div id="led-slider-container">
-      <input type="range" id="led-slider" min="0" max="100" value="0">
-      <span id="led-slider-value">0%</span>
+    <div class="bottom-column-mid" id="led-col">
+      <div id="led-buttons">
+        <!-- LED buttons grid (4 rows x 6 columns) will be generated dynamically -->
+      </div>
+      <div id="led-slider-container">
+        <!-- Vertical noUiSlider will be rendered here -->
+        <div id="led-slider"></div>
+        <span id="led-slider-value">0%</span>
+      </div>
+    </div>
+    <div class="bottom-column-right" id="verfolger-col">
+      <textarea id="verfolgerInput" placeholder="Notizen für Spotlight..."></textarea>
     </div>
   </div>
-  <div class="bottom-column" id="verfolger-col">
-    <textarea id="verfolgerInput" placeholder="Notizen für Spotlight..."></textarea>
-  </div>
-</div>
-
 
   <!-- Snapshot Controls -->
   <div id="snapshotControls">
