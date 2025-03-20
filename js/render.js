@@ -1,7 +1,7 @@
 /*********************** Rendering Functions ************************/
 
 /**
- * Renders the current scene including LED grid, sliders, and spotlight notes.
+ * Renders the current scene including LED grids, sliders, and spotlight notes.
  */
 function renderScene() {
   const currentScene = db.scenes[currentSceneIndex];
@@ -24,7 +24,9 @@ function renderScene() {
     sceneName: "Keine nächste Szene",
     image: "",
     pultLinks: { sectionA: new Array(12).fill(0) },
-    pultRechts: { sectionA: new Array(12).fill(0) }
+    pultRechts: { sectionA: new Array(12).fill(0) },
+    led: new Array(24).fill(false),
+    ledSlider: 0
   };
   document.getElementById('nextSceneNameField').value = nextScene.sceneName;
   document.getElementById('nextSceneNameFieldRight').value = nextScene.sceneName;
@@ -38,9 +40,9 @@ function renderScene() {
 
   renderSceneList();
 
-  // Render LED Buttons based on current DB value
-  const ledButtons = document.querySelectorAll('.led-btn');
-  ledButtons.forEach((btn, index) => {
+  // Render LED Buttons and Sliders for current scene (Section A)
+  const ledButtonsA = document.querySelectorAll('#led-buttons-SectionA .led-btn');
+  ledButtonsA.forEach((btn, index) => {
     if (currentScene.led && currentScene.led[index]) {
       btn.classList.add('on');
       btn.style.backgroundColor = 'green';
@@ -49,16 +51,35 @@ function renderScene() {
       btn.style.backgroundColor = 'white';
     }
   });
-
-  // Update LED slider value using noUiSlider API
-  const ledSlider = document.getElementById('led-slider');
-  if (ledSlider && ledSlider.noUiSlider) {
-    ledSlider.noUiSlider.set(currentScene.ledSlider || 0);
-    updateLEDSliderValue(ledSlider.noUiSlider.get());
+  // Update LED slider for current scene
+  const ledSliderA = document.getElementById('led-slider-A');
+  if (ledSliderA && ledSliderA.noUiSlider) {
+    ledSliderA.noUiSlider.set(currentScene.ledSlider || 0);
+    updateLEDSliderValue(ledSliderA.noUiSlider.get(), 'led-slider-value-A');
   }
 
+  // Render LED Buttons and Sliders for next scene (Section B) - read-only
+  const ledButtonsB = document.querySelectorAll('#led-buttons-SectionB .led-btn');
+  ledButtonsB.forEach((btn, index) => {
+    if (nextScene.led && nextScene.led[index]) {
+      btn.classList.add('on');
+      btn.style.backgroundColor = 'green';
+    } else {
+      btn.classList.remove('on');
+      btn.style.backgroundColor = 'white';
+    }
+  });
+  const ledSliderB = document.getElementById('led-slider-B');
+  if (ledSliderB && ledSliderB.noUiSlider) {
+    ledSliderB.noUiSlider.set(nextScene.ledSlider || 0);
+    updateLEDSliderValue(ledSliderB.noUiSlider.get(), 'led-slider-value-B');
+  }
+  
   // Update spotlight (Verfolger) textarea value
   document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
+  
+  // Update body background color based on mode
+  document.body.style.backgroundColor = isEditMode ? '#ffffe0' : '#ffffff';
 }
 
 /**
@@ -82,6 +103,9 @@ function renderSceneList() {
     });
     szenelistDiv.appendChild(item);
   });
+  
+  // Also update LED controls for next scene (read-only) by adding a readonly class
+  document.getElementById('led-sectionB').classList.add('readonly');
 }
 
 /**

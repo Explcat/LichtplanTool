@@ -20,9 +20,9 @@ function createEmptyScene(sceneNumber) {
     image: '',  // Bild als DataURL
     pultLinks: { sectionA: new Array(12).fill(0) },
     pultRechts: { sectionA: new Array(12).fill(0) },
-    led: new Array(24).fill(false),  // 24 LED-Buttons (false = off)
-    ledSlider: 0,                    // LED Slider Wert (0-100)
-    verfolger: ''                    // Spotlight-Notizen
+    led: new Array(24).fill(false),      // LED buttons for current scene
+    ledSlider: 0,                        // LED slider value for current scene
+    verfolger: ''                        // Spotlight-Notizen
   };
 }
 

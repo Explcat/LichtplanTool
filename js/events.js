@@ -82,17 +82,17 @@ function saveSnapshot(silent) {
   scene.pultLinks.sectionA = collectValues('links-A');
   scene.pultRechts.sectionA = collectValues('rechts-A');
 
-  // Save LED statuses
-  const ledState = [];
-  document.querySelectorAll('.led-btn').forEach(btn => {
-    ledState.push(btn.classList.contains('on'));
+  // Save LED statuses from current scene (Section A)
+  const ledStateA = [];
+  document.querySelectorAll('#led-buttons-SectionA .led-btn').forEach(btn => {
+    ledStateA.push(btn.classList.contains('on'));
   });
-  scene.led = ledState;
+  scene.led = ledStateA;
 
-  // Save LED slider value using noUiSlider API
-  const ledSlider = document.getElementById('led-slider');
-  scene.ledSlider = parseInt(ledSlider.noUiSlider.get());
-  
+  // Save LED slider value for current scene using noUiSlider API
+  const ledSliderA = document.getElementById('led-slider-A');
+  scene.ledSlider = parseInt(ledSliderA.noUiSlider.get());
+
   // Save spotlight (Verfolger) notes from textarea
   scene.verfolger = document.getElementById('verfolgerInput').value;
 
@@ -106,6 +106,7 @@ toggleModeButton.addEventListener('click', function() {
   isEditMode = !isEditMode;
   toggleModeButton.textContent = isEditMode ? 'Wechsel zu Read Mode' : 'Wechsel zu Edit Mode';
   editSzenenameBtn.style.display = isEditMode ? 'inline-block' : 'none';
+  // Update the notes textarea readOnly property
   document.getElementById('notes').readOnly = !isEditMode;
   updatePictureControls();
   renderScene();
@@ -216,17 +217,20 @@ document.getElementById('importBtn').addEventListener('click', function() {
 document.getElementById('importFile').addEventListener('change', importData);
 
 /*********************** LED Slider Event ************************/
-// Use noUiSlider update event to update the displayed value
-const ledSlider = document.getElementById('led-slider');
-if (ledSlider && ledSlider.noUiSlider) {
-  ledSlider.noUiSlider.on('update', function(values, handle) {
-    updateLEDSliderValue(values[handle]);
+// For current scene LED slider (Section A)
+const ledSliderA = document.getElementById('led-slider-A');
+if (ledSliderA && ledSliderA.noUiSlider) {
+  ledSliderA.noUiSlider.on('update', function(values, handle) {
+    updateLEDSliderValue(values[handle], 'led-slider-value-A');
   });
 }
+// For next scene LED slider (Section B) - read-only, so no update event needed
 
 /*********************** Initial Setup ************************/
-// Initialize LED buttons and vertical LED slider, then load the database and update picture controls.
-initLEDButtons();
-initLEDSlider();
+// Initialize LED buttons and vertical LED sliders
+initLEDButtons('led-buttons-SectionA', true);   // Editable (current scene)
+initLEDButtons('led-buttons-SectionB', false);    // Read-only (next scene)
+initLEDSlider('led-slider-A', 0, true);             // Editable
+initLEDSlider('led-slider-B', 0, false);            // Read-only
 loadJsonDB();
 updatePictureControls();

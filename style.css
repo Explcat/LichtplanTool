@@ -3,6 +3,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 10px;
   padding: 0;
+  background-color: #ffffff; /* Default background for READ mode */
 }
 
 /* Oberer Szenenbereich */
@@ -179,7 +180,7 @@ body {
 /* Bottom Row Container */
 #bottom-row {
   display: flex;
-  
+  justify-content: space-between;
   align-items: flex-start;
   margin-top: 10px;
   padding: 10px;
@@ -187,37 +188,16 @@ body {
   background-color: #f3f3f3;
 }
 
-/* Each Column takes 1/3 of the width */
-.bottom-column-left {
-  width: 33.33%;
-  box-sizing: border-box;
-  padding: 5px;
-}
-
-.bottom-column-mid {
-  width: 20%;
-  box-sizing: border-box;
-  padding: 5px;
-}
-
-.bottom-column-right {
-  width: 33.33%;
+/* Each Column takes appropriate width */
+.bottom-column-left, .bottom-column-right {
+  width: 50%;
   box-sizing: border-box;
   padding: 5px;
 }
 
 /* Style for the textareas in bottom row */
+.bottom-column-left textarea,
 .bottom-column-right textarea {
-  width: 100%;
-  height: 150px;
-  resize: vertical;
-  padding: 5px;
-  font-size: 1.8em;
-  border: 1px solid #ccc;
-}
-
-/* Style for the textareas in bottom row */
-.bottom-column-left textarea {
   width: 100%;
   height: 150px;
   resize: vertical;
@@ -226,28 +206,38 @@ body {
   border: 1px solid #ccc;
 }
 
-/* LED Section within the middle column */
-#led {
-  margin-top: 10px;
+/* LED Section (Mitte) */
+.led-mitte {
+  margin: 10px auto;
   display: flex;
-  align-items: flex-start;
+  justify-content: space-around;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: #fafafa;
+}
+#led-col > div {
+  text-align: center;
 }
 
 /* LED Buttons Container */
-#led-buttons {
+#led-buttons-SectionA,
+#led-buttons-SectionB {
   display: inline-block;
+  margin-bottom: 10px;
 }
 
 /* LED Slider Container - placed directly next to the LED buttons */
-#led-slider-container {
+#led-slider-container-A,
+#led-slider-container-B {
   display: inline-block;
   margin-left: 10px;
 }
 
-/* LED Slider (vertical noUiSlider) */
-#led-slider {
- 
-  height: 142px;
+/* Vertical noUiSlider */
+#led-slider-A,
+#led-slider-B {
+  width: 40px;
+  height: 150px;
 }
 
 /* LED Button Style */
@@ -265,5 +255,9 @@ body {
   color: white;
 }
 
-/* Verfolger Input Field (handled as textarea in bottom column) */
-/* No extra styling required since it inherits from .bottom-column textarea */
+/* Disable pointer events for read-only LED controls */
+.readonly .led-btn,
+.readonly .noUi-target {
+  pointer-events: none;
+  opacity: 0.6;
+}

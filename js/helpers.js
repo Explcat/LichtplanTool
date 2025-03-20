@@ -2,6 +2,7 @@
 
 /**
  * Creates a noUiSlider on the given element.
+ * Used for channel sliders.
  * @param {HTMLElement} element 
  * @param {number} startValue 
  * @param {boolean} readOnly 
@@ -51,38 +52,44 @@ function createChannelSliders(containerId, values, readOnly = false) {
 }
 
 /**
- * Initializes the LED button grid (4 rows x 6 columns).
+ * Initializes the LED button grid (4 rows x 6 columns) in a given container.
  * Each button is labeled with its number (1-24) and toggles its state on click.
+ * @param {string} containerId - The ID of the container element.
+ * @param {boolean} editable - If true, buttons are clickable (only toggled in edit mode).
  */
-function initLEDButtons() {
-  const ledButtonsContainer = document.getElementById('led-buttons');
-  ledButtonsContainer.innerHTML = '';
+function initLEDButtons(containerId, editable = true) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
   for (let i = 0; i < 24; i++) {
     const btn = document.createElement('button');
     btn.classList.add('led-btn');
     btn.dataset.index = i;
     btn.textContent = i + 1; // Display button number (1 to 24)
-    // Toggle LED status on click – always responsive regardless of edit mode.
-    btn.addEventListener('click', function() {
-      btn.classList.toggle('on');
-      // Background color will update based on class (CSS handles .led-btn.on)
-      btn.style.backgroundColor = btn.classList.contains('on') ? 'green' : 'white';
-    });
-    ledButtonsContainer.appendChild(btn);
+    if (editable) {
+      btn.addEventListener('click', function() {
+        if (!isEditMode) return;  // Only allow toggling in edit mode
+        btn.classList.toggle('on');
+        btn.style.backgroundColor = btn.classList.contains('on') ? 'green' : 'white';
+      });
+    }
+    container.appendChild(btn);
     // Insert a line break after every 6 buttons
     if ((i + 1) % 6 === 0) {
-      ledButtonsContainer.appendChild(document.createElement('br'));
+      container.appendChild(document.createElement('br'));
     }
   }
 }
 
 /**
- * Initializes a vertical noUiSlider for the LED slider in the LED section.
+ * Initializes a vertical noUiSlider for the LED slider in a given container.
+ * @param {string} containerId - The ID of the slider element.
+ * @param {number} startValue - The initial slider value.
+ * @param {boolean} editable - If true, slider is interactive in edit mode.
  */
-function initLEDSlider() {
-  const slider = document.getElementById('led-slider');
+function initLEDSlider(containerId, startValue, editable = true) {
+  const slider = document.getElementById(containerId);
   noUiSlider.create(slider, {
-    start: 0,
+    start: startValue,
     step: 1,
     range: { min: 0, max: 100 },
     orientation: 'vertical',
@@ -90,14 +97,16 @@ function initLEDSlider() {
     tooltips: true,
     animate: false
   });
+  slider.style.pointerEvents = editable ? (isEditMode ? 'auto' : 'none') : 'none';
 }
 
 /**
  * Updates the LED slider value display.
  * @param {number|string} value 
+ * @param {string} displayId - The ID of the element to update.
  */
-function updateLEDSliderValue(value) {
-  document.getElementById('led-slider-value').textContent = value + '%';
+function updateLEDSliderValue(value, displayId) {
+  document.getElementById(displayId).textContent = value + '%';
 }
 
 /**
