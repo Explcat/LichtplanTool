@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Lichtplan Prototyp – Production Ready mit Bildauswahl</title>
+  <link rel="stylesheet" href="style.css">
+  <!-- noUiSlider CSS -->
+ <link rel="stylesheet" href="nouislider.min.css">
+</head>
+<body>
+  <!-- Oberer Szenenbereich: Anzeige der aktuellen Szene -->
+  <div id="szene-id">
+    <span class="scenenumer">Szene: <strong id="sceneNumber">1</strong></span>
+    <span id="szenenameDisplay">[Szenenname]</span>
+    <button id="editSzenenameBtn" style="display:none;">Edit</button>
+  </div>
+
+  <!-- Skip-Buttons -->
+  <div id="skipControls">
+    <button id="prevScene">Vorherige Szene</button>
+    <button id="nextScene">Nächste Szene</button>
+  </div>
+
+  <!-- Steuerungsbereich -->
+  <div id="controls">
+    <button id="toggleMode">Wechsel zu Edit Mode</button>
+    <button id="newSzene">Neue Szene einfügen</button>
+    <button id="deleteSzene">Szene löschen</button>
+  </div>
+
+<div id="scenepicture">
+  <div id="currentPicture">
+    <img id="sceneImg" src="" alt="Aktuelles Szenenbild">
+    <!-- Bild-Auswahl: nur im Edit-Mode sichtbar -->
+    <button id="addPictureBtn" style="display:none;">Add Picture</button>
+    <!-- Hidden File Input -->
+    <input type="file" id="pictureFileInput" accept="image/jpeg" style="display:none;">
+  </div>
+  <div id="nextPictureLabel">nächste Szene</div>
+  <div id="nextPicture">
+    <img id="nextSceneImg" src="" alt="Nächstes Szenenbild">
+  </div>
+</div>
+
+  <!-- Pult-Bereiche (links) -->
+  <div id="pult-links" class="pult">
+    <div id="links-sectionA">
+      <h4>Aktuelle Szene – <input type="text" id="currentSceneNameField" readonly></h4>
+      <div id="links-A"></div>
+    </div>
+    <div id="links-sectionB">
+      <h4>Nächste Szene – <input type="text" id="nextSceneNameField" readonly></h4>
+      <div id="links-B"></div>
+    </div>
+  </div>
+
+  <!-- Pult-Bereiche (rechts) -->
+  <div id="pult-rechts" class="pult">
+    <div id="rechts-sectionA">
+      <h4>Aktuelle Szene – <input type="text" id="currentSceneNameFieldRight" readonly></h4>
+      <div id="rechts-A"></div>
+    </div>
+    <div id="rechts-sectionB">
+      <h4>Nächste Szene – <input type="text" id="nextSceneNameFieldRight" readonly></h4>
+      <div id="rechts-B"></div>
+    </div>
+  </div>
+
+  <!-- Notizen -->
+  <div id="notes" contenteditable="false">
+    Notizen zu dieser Szene...
+  </div>
+
+  <!-- Snapshot Controls -->
+  <div id="snapshotControls">
+    <button id="saveSnapshot">Manuel speichern</button>
+   <button id="loadSnapshot"></button>
+  </div>
+
+  <!-- Export/Import Controls -->
+  <div id="fileControls">
+    <button id="exportBtn">Daten exportieren</button>
+    <input type="file" id="importFile" accept="application/json" style="display:none;">
+    <button id="importBtn">Daten importieren</button>
+  </div>
+
+<div id="szenelist"></div>
+
+  <!-- noUiSlider JS -->
+  <script src="nouislider.min.js"></script>
+  <script>
+    /*********************** Global Variables & DB Setup ************************/
+    let isEditMode = false;
+    let db = { scenes: [] };
+    let currentSceneIndex = 0;
+    // DOM-Elemente – szenenameDisplay als let, da wir diesen ersetzen können
+    let szenenameDisplay = document.getElementById('szenenameDisplay');
+    const toggleModeButton = document.getElementById('toggleMode');
+    const notesDiv = document.getElementById('notes');
+    const editSzenenameBtn = document.getElementById('editSzenenameBtn');
+    const addPictureBtn = document.getElementById('addPictureBtn');
+    const pictureFileInput = document.getElementById('pictureFileInput');
+    const sceneImg = document.getElementById('sceneImg');
+
+    /*********************** Helper Functions ************************/
+    // Erstellt einen noUiSlider im übergebenen Element.
+    // Der optionale Parameter readOnly erzwingt pointerEvents 'none'.
+    function createSlider(element, startValue, readOnly = false) {
+      noUiSlider.create(element, {
+        start: startValue,
+        step: 1,
+        range: { 'min': 0, 'max': 10 },
+        orientation: 'vertical',
+        direction: 'rtl', // Niedrigste Werte unten
+        tooltips: true,
+        animate: false
+      });
+      element.style.pointerEvents = readOnly ? 'none' : (isEditMode ? 'auto' : 'none');
+    }
+
+    // Erzeugt 12 vertikale Slider in einem Container anhand eines Werte-Arrays.
+    // Optionaler Parameter readOnly wird weitergegeben.
+    function createChannelSliders(containerId, values, readOnly = false) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+      for (let i = 0; i < 12; i++) {
+        const chanDiv = document.createElement('div');
+        chanDiv.classList.add('channel');
+
+        // Label oberhalb des Sliders
+        const label = document.createElement('div');
+        label.classList.add('slider-label');
+        label.textContent = i + 1;
+        chanDiv.appendChild(label);
+
+        // Slider-DIV
+        const sliderDiv = document.createElement('div');
+        sliderDiv.classList.add('slider');
+        sliderDiv.id = containerId + '-channel-' + (i + 1);
+        chanDiv.appendChild(sliderDiv);
+        container.appendChild(chanDiv);
+
+        let initial = (values && values[i] !== undefined) ? values[i] : 0;
+        createSlider(sliderDiv, initial, readOnly);
+      }
+    }
+
+    /*********************** Rendering Functions ************************/
+    // Rendert die aktuelle Szene (Section A) und die nächste Szene (Section B – read-only).
+    function renderScene() {
+      const currentScene = db.scenes[currentSceneIndex];
+      document.getElementById('sceneNumber').textContent = currentScene.sceneNumber;
+      szenenameDisplay.textContent = currentScene.sceneName;
+      notesDiv.innerHTML = currentScene.notes;
+
+      // Bild: Falls ein Bild in der DB gespeichert ist, anzeigen; ansonsten leeres Bild.
+if (currentScene.image) {
+  sceneImg.src = currentScene.image;
+} else {
+  sceneImg.src = "";
+}
+
+      // Aktuelle Szene (Section A) – in den Input-Feldern:
+      document.getElementById('currentSceneNameField').value = currentScene.sceneName;
+      document.getElementById('currentSceneNameFieldRight').value = currentScene.sceneName;
+
+      // Nächste Szene: Falls vorhanden, sonst Default-Werte.
+      let nextScene = db.scenes[currentSceneIndex + 1] || {
+        sceneName: "Keine nächste Szene",
+		image: "",
+        pultLinks: { sectionA: new Array(12).fill(0) },
+        pultRechts: { sectionA: new Array(12).fill(0) }
+      };
+      document.getElementById('nextSceneNameField').value = nextScene.sceneName;
+      document.getElementById('nextSceneNameFieldRight').value = nextScene.sceneName;
+	  document.getElementById('nextSceneImg').src = nextScene.image || "";
+
+      // Pult-Bereiche:
+      // Section A zeigt die Fader der aktuellen Szene.
+      createChannelSliders('links-A', currentScene.pultLinks.sectionA);
+      createChannelSliders('rechts-A', currentScene.pultRechts.sectionA);
+      // Section B zeigt immer die Fader der nächsten Szene – read-only!
+      createChannelSliders('links-B', nextScene.pultLinks.sectionA, true);
+      createChannelSliders('rechts-B', nextScene.pultRechts.sectionA, true);
+    renderSceneList();
+	}
+
+function renderSceneList() {
+  const szenelistDiv = document.getElementById('szenelist');
+  szenelistDiv.innerHTML = "";
+  db.scenes.forEach((scene, index) => {
+    const item = document.createElement('div');
+    item.classList.add('szenelist-item');
+    if (index === currentSceneIndex) {
+      item.classList.add('current');
+    }
+    item.textContent = scene.sceneName;
+    // Bei Klick wechselt zur entsprechenden Szene.
+    item.addEventListener('click', function() {
+      saveSnapshot(true);
+      currentSceneIndex = index;
+      renderScene();
+    });
+    szenelistDiv.appendChild(item);
+  });
+}
+
+
+    /*********************** Szenenname Editing ************************/
+    // Aktiviert das Editieren des Szenennamens.
+    function enableSzenenameEditing() {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id = 'szenenameInput';
+      input.value = szenenameDisplay.textContent;
+      szenenameDisplay.parentNode.replaceChild(input, szenenameDisplay);
+      editSzenenameBtn.textContent = 'Save';
+    }
+
+    // Speichert den editierten Szenennamen und setzt den Button zurück.
+    function saveSzenenameEdit() {
+      const input = document.getElementById('szenenameInput');
+      if (input) {
+        db.scenes[currentSceneIndex].sceneName = input.value;
+        const span = document.createElement('span');
+        span.id = 'szenenameDisplay';
+        span.textContent = input.value;
+        input.parentNode.replaceChild(span, input);
+        szenenameDisplay = span;
+        document.getElementById('currentSceneNameField').value = input.value;
+        document.getElementById('currentSceneNameFieldRight').value = input.value;
+        editSzenenameBtn.textContent = 'Edit';
+      }
+    }
+
+    editSzenenameBtn.addEventListener('click', function() {
+      if (editSzenenameBtn.textContent === 'Edit') {
+        enableSzenenameEditing();
+      } else {
+        saveSzenenameEdit();
+        saveJsonDB();
+      }
+    });
+
+   /*********************** Bildauswahl ************************/
+// Update: Kontrolliere, ob im Edit-Mode der "Add Picture"-Button angezeigt wird.
+function updatePictureControls() {
+  addPictureBtn.style.display = isEditMode ? 'inline-block' : 'none';
+}
+
+// Beim Klick auf den Button wird das versteckte File-Input ausgelöst.
+addPictureBtn.addEventListener('click', function() {
+  pictureFileInput.click();
+});
+
+// Wenn eine Datei ausgewählt wird, prüfen wir Typ und Größe und laden sie als DataURL.
+pictureFileInput.addEventListener('change', function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  // Check file type (only JPEG) and file size (max 10 MB)
+  if (file.type !== "image/jpeg") {
+    alert("Bitte nur JPEG-Bilder auswählen.");
+    return;
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    alert("Dateigröße darf 10 MB nicht überschreiten.");
+    return;
+  }
+  // Instead of reading as DataURL, use the file name to build a local URL.
+  // Ensure that the image is already available in the 'szenenbilder' folder.
+  const localURL = "szenenbilder/" + file.name;
+  db.scenes[currentSceneIndex].image = localURL;
+  sceneImg.src = localURL;
+  saveJsonDB();
+});
+
+
+    /*********************** Mode & Snapshot Handling ************************/
+    // Speichert den aktuellen Zustand der Szene; silent unterdrückt Alerts.
+    function saveSnapshot(silent) {
+      const scene = db.scenes[currentSceneIndex];
+      scene.notes = notesDiv.innerHTML;
+      scene.pultLinks.sectionA = collectValues('links-A');
+      scene.pultRechts.sectionA = collectValues('rechts-A');
+      saveJsonDB();
+      if (!silent) {
+        alert('Snapshot gespeichert!');
+      }
+    }
+
+    toggleModeButton.addEventListener('click', function() {
+      isEditMode = !isEditMode;
+      toggleModeButton.textContent = isEditMode ? 'Wechsel zu Read Mode' : 'Wechsel zu Edit Mode';
+      editSzenenameBtn.style.display = isEditMode ? 'inline-block' : 'none';
+      notesDiv.contentEditable = isEditMode;
+      updatePictureControls();
+      renderScene();
+    });
+
+    function collectValues(containerId) {
+      const container = document.getElementById(containerId);
+      const sliders = container.getElementsByClassName('slider');
+      const values = [];
+      for (let sliderDiv of sliders) {
+        let value = sliderDiv.noUiSlider.get();
+        values.push(parseInt(value));
+      }
+      return values;
+    }
+
+    function saveJsonDB() {
+      localStorage.setItem('jsonDB', JSON.stringify(db));
+    }
+
+    function loadJsonDB() {
+      const localData = localStorage.getItem('jsonDB');
+      if (localData) {
+        db = JSON.parse(localData);
+        console.log('DB aus localStorage geladen');
+        renderScene();
+      } else {
+        fetch('Projektdaten/db.json')
+          .then(response => response.json())
+          .then(data => {
+            db = data;
+            if (db.scenes.length === 0) {
+              db.scenes.push(createEmptyScene(1));
+            }
+            renderScene();
+          })
+          .catch(err => {
+            console.error('Fehler beim Laden der db.json, Standard-DB wird erstellt.', err);
+            db = { scenes: [createEmptyScene(1)] };
+            renderScene();
+          });
+      }
+    }
+
+    // Erzeugt eine leere Szene – speichert nur Faderwerte für Section A.
+    function createEmptyScene(sceneNumber) {
+      return {
+        sceneNumber: sceneNumber,
+        sceneName: 'Szene ' + sceneNumber,
+        nextszenename: '',
+        notes: '',
+        image: '',  // Bild als DataURL
+        pultLinks: { sectionA: new Array(12).fill(0) },
+        pultRechts: { sectionA: new Array(12).fill(0) }
+      };
+    }
+
+    /*********************** Szenen-Wechsel (Skip) ************************/
+    document.getElementById('prevScene').addEventListener('click', function() {
+      saveSnapshot(true);
+      if (currentSceneIndex > 0) {
+        currentSceneIndex--;
+        renderScene();
+      } else {
+        alert('Bereits bei der ersten Szene.');
+      }
+    });
+
+    document.getElementById('nextScene').addEventListener('click', function() {
+      saveSnapshot(true);
+      if (currentSceneIndex < db.scenes.length - 1) {
+        currentSceneIndex++;
+        renderScene();
+      } else {
+        alert('Keine nächste Szene vorhanden.');
+      }
+    });
+
+    /*********************** Neue Szene / Löschen ************************/
+    document.getElementById('newSzene').addEventListener('click', function() {
+      saveSnapshot(true);
+      const newScene = createEmptyScene(db.scenes[currentSceneIndex].sceneNumber + 1);
+      db.scenes.splice(currentSceneIndex + 1, 0, newScene);
+      renumberScenes();
+      currentSceneIndex++;
+      renderScene();
+      saveJsonDB();
+    });
+
+    document.getElementById('deleteSzene').addEventListener('click', function() {
+      if (db.scenes.length <= 1) {
+        alert('Mindestens eine Szene muss vorhanden sein.');
+        return;
+      }
+      if (confirm('Szene wirklich löschen?')) {
+        db.scenes.splice(currentSceneIndex, 1);
+        if (currentSceneIndex >= db.scenes.length) {
+          currentSceneIndex = db.scenes.length - 1;
+        }
+        renumberScenes();
+        renderScene();
+        saveJsonDB();
+      }
+    });
+
+    function renumberScenes() {
+      db.scenes.forEach((scene, index) => {
+        scene.sceneNumber = index + 1;
+      });
+    }
+
+    /*********************** Snapshot Buttons ************************/
+    document.getElementById('saveSnapshot').addEventListener('click', function() {
+      saveSnapshot();
+    });
+    document.getElementById('loadSnapshot').addEventListener('click', function() {
+      loadJsonDB();
+      alert('Snapshot geladen!');
+    });
+
+    /*********************** Export / Import ************************/
+    function exportData() {
+      const dataStr = JSON.stringify(db, null, 2);
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = "db.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function importData(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          db = JSON.parse(e.target.result);
+          currentSceneIndex = 0;
+          renderScene();
+          saveJsonDB();
+          alert("Daten erfolgreich geladen!");
+        } catch (error) {
+          alert("Fehler beim Parsen der Datei!");
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    document.getElementById('exportBtn').addEventListener('click', exportData);
+    document.getElementById('importBtn').addEventListener('click', function() {
+      document.getElementById('importFile').click();
+    });
+    document.getElementById('importFile').addEventListener('change', importData);
+
+    /*********************** Initiale DB-Ladung ************************/
+    loadJsonDB();
+    // Beim initialen Laden Update der Bild-Controls
+    updatePictureControls();
+  </script>
+</body>
+</html>

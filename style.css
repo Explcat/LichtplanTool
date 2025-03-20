@@ -1,0 +1,226 @@
+/* style.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 10px;
+  padding: 0;
+}
+
+/* Oberer Szenenbereich */
+#szene-id {
+  margin-bottom: 10px;
+  font-size: 1.2em;
+}
+#szene-id .scenenumer {
+  margin-right: 10px;
+}
+#szene-id button {
+  margin-left: 10px;
+  padding: 2px 5px;
+}
+
+/* Skip Controls */
+#skipControls {
+  margin-bottom: 10px;
+}
+#skipControls button {
+  margin-right: 10px;
+  padding: 5px 10px;
+}
+
+/* Standard Controls */
+#controls, #snapshotControls, #fileControls {
+  margin-bottom: 10px;
+}
+#controls button,
+#snapshotControls button,
+#fileControls button {
+  margin-right: 10px;
+  padding: 5px 10px;
+}
+
+/* Szenenbild */
+#scenepicture {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  height: 200px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#scenepicture img {
+  max-height: 100%;
+  max-width: 100%;
+}
+/* Add Picture Button im Bildbereich */
+#scenepicture button {
+  position: relative;
+  bottom: 10px;
+  right: 10px;
+  padding: 5px 10px;
+}
+/* Neuer Bildbereich */
+#scenepicture {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  padding: 10px;
+  gap: 10px;
+}
+
+/* Container für aktuelles und nächstes Bild */
+#currentPicture,
+#nextPicture {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 200px;
+  overflow: hidden;
+}
+
+/* Bilder innerhalb der Container */
+#currentPicture img,
+#nextPicture img {
+  max-width: 50%;
+  max-height: 50%;
+  object-fit: contain;
+}
+
+/* Label zwischen den Bildern */
+#nextPictureLabel {
+  font-size: 1.2em;
+  white-space: nowrap;
+  align-self: center;
+}
+
+/* Pult-Bereiche */
+.pult {
+  display: inline-block;
+  vertical-align: top;
+  width: 45%;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 5px;
+  background-color: #919191;
+}
+.pult h4 {
+  margin-bottom: 5px;
+}
+.pult input[type="text"] {
+  width: 60%;
+  padding: 2px;
+  font-size: 0.9em;
+}
+
+/* Kanalcontainer */
+.channel {
+  display: inline-block;
+  margin-left: 35px;
+  text-align: center;
+}
+.slider-label {
+  margin-bottom: 5px;
+  background: #d9d9d9;
+  padding: 1px;
+}
+
+
+
+/* Slider-Container */
+.slider {
+  margin: 0 auto;
+  width: 40px;
+  height: 150px;
+}
+
+/* Notizen */
+#notes {
+  border: 1px solid #ccc;
+  padding: 5px;
+  min-height: 50px;
+}
+
+/*Styling für die Kanalslider*/
+/*Zahlen Display*/
+.noUi-tooltip {
+  font-size: 12px;
+}
+/*Kanalhintergrund*/
+.noUi-base, .noUi-connects {
+  background-color: #555;
+}
+
+/* Szene-Liste am rechten Rand */
+#szenelist {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 200px; /* Passe die Breite nach Bedarf an */
+  overflow-y: auto;
+  border-left: 1px solid #ccc;
+  background: #f9f9f9;
+  padding: 10px;
+  box-sizing: border-box;
+}
+
+.szenelist-item {
+  padding: 5px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.szenelist-item.current {
+  background: #007BFF;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* Bottom Row Container */
+#bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  background-color: #f3f3f3;
+}
+
+/* Left Side of Bottom Row */
+#bottom-left {
+  flex: 1;
+  margin-right: 10px;
+}
+
+/* LED Section */
+#led {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+}
+
+/* LED Buttons Container */
+#led-buttons {
+  display: inline-block;
+}
+
+/* LED Slider Container */
+#led-slider-container {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+/* Right Side of Bottom Row (Verfolger) */
+#bottom-right {
+  width: 250px;
+}
+
+/* Verfolger Input Field */
+#verfolger input {
+  width: 100%;
+  padding: 5px;
+  font-size: 1em;
+}
