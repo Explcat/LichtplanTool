@@ -8,12 +8,13 @@ body {
 /* NEW: Flex container for overall layout */
 #flex-container {
   display: flex;
+  
 }
 
 /* NEW: Wrap main content */
 #content-wrapper {
   flex: 1;
-}
+  }
 
 /* Oberer Szenenbereich */
 #szene-id {
@@ -188,7 +189,7 @@ height: 100%;
   /* position: fixed; */
   top: 0;
   right: 0;
-  height: 100%;
+  max-height: 800px;
   width: 200px; /* Passe die Breite nach Bedarf an */
   overflow-y: auto;
   border-left: 1px solid #ccc;

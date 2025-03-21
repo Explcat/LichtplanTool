@@ -110,7 +110,8 @@ function renderSceneList() {
     if (index === currentSceneIndex) {
       item.classList.add('current');
     }
-    item.textContent = scene.sceneName;
+    // Combine scene number and scene name in the list item.
+    item.textContent = scene.sceneNumber + ": " + scene.sceneName;
     // Switch scene on click
     item.addEventListener('click', function() {
       saveSnapshot(true);
@@ -123,6 +124,7 @@ function renderSceneList() {
   // Also update LED controls for next scene (read-only) by adding a readonly class
   document.getElementById('led-sectionB').classList.add('readonly');
 }
+
 
 /**
  * Updates picture controls based on mode.
