@@ -74,27 +74,7 @@ pictureFileInput.addEventListener('change', function(event) {
 });
 
 /*********************** Music Section Events ************************/
-// When the "Add Music" button is clicked, open the hidden file input.
-document.getElementById('addMusicBtn').addEventListener('click', function(){
-  document.getElementById('musicFileInput').click();
-});
 
-// When a music file is selected, validate and add it to the current scene.
-document.getElementById('musicFileInput').addEventListener('change', function(event){
-  const file = event.target.files[0];
-  if (!file) return;
- 
-  // Limit to 5 music items
-  if (musicItems.length >= 5) {
-    alert('Maximal 5 Musikdateien sind erlaubt.');
-    return;
-  }
-  // Construct local URL: files are assumed to be in the /szenenmusik folder
-  const fileUrl = 'szenenmusik/' + file.name;
-  const fileName = file.name;
-  musicItems.push({ fileUrl, fileName, audio: null });
-  renderMusicList();
-});
 
 /*********************** Mode & Snapshot Handling ************************/
 /**

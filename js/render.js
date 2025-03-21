@@ -1,7 +1,7 @@
 /*********************** Rendering Functions ************************/
 
 /**
- * Renders the current scene including LED grids, sliders, spotlight notes, and music.
+ * Renders the current scene including LED grids, sliders, spotlight notes, and updates music displays.
  */
 function renderScene() {
   const currentScene = db.scenes[currentSceneIndex];
@@ -87,12 +87,18 @@ function renderScene() {
   // Update spotlight (Verfolger) textarea value
   document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
   
-  // Load and render music for the current scene.
+  // Update music items for the current scene (for editing in #musicList)
   if (!currentScene.musik) {
     currentScene.musik = [];
   }
   musicItems = currentScene.musik;
   renderMusicList();
+  
+  // Render persistent music player (all scenes)
+  renderPersistentMusicList();
+
+  // Update picture controls based on mode
+  updatePictureControls();
 
   // Update body background color based on mode
   document.body.style.backgroundColor = isEditMode ? '#ffffe0' : '#ffffff';
@@ -111,7 +117,7 @@ function renderSceneList() {
       item.classList.add('current');
     }
     // Combine scene number and scene name in the list item.
-    item.textContent = "Szene " + scene.sceneNumber + ": " + scene.sceneName;
+    item.textContent = scene.sceneNumber + ": " + scene.sceneName;
     // Switch scene on click
     item.addEventListener('click', function() {
       saveSnapshot(true);
@@ -125,7 +131,6 @@ function renderSceneList() {
   document.getElementById('led-sectionB').classList.add('readonly');
 }
 
-
 /**
  * Updates picture controls based on mode.
  */
@@ -135,13 +140,7 @@ function updatePictureControls() {
 }
 
 /**
- * Renders the music list in the #musicList div.
- */
-/**
- * Renders the music list in the #musicList div using an HTML audio element.
- */
-/**
- * Renders the music list in the #musicList div using an HTML audio element.
+ * Renders the music list in the #musicList div (for editing, including delete buttons).
  */
 function renderMusicList() {
   const musicList = document.getElementById('musicList');
@@ -182,3 +181,89 @@ function renderMusicList() {
   });
 }
 
+/**
+ * Renders the persistent music player in a dedicated container inside the #musik section.
+ * For each scene with music items, displays the scene number, scene name, and the filename.
+ * If the scene matches the current scene, a warning "Achtung Musik!" is displayed.
+ * In edit mode, each music item also gets a Delete button.
+ */
+function renderPersistentMusicList() {
+  // Use (or create) a container with id "persistentMusicList" inside the #musik section.
+  let persistentContainer = document.getElementById('persistentMusicList');
+  if (!persistentContainer) {
+    const musikDiv = document.getElementById('musik');
+    persistentContainer = document.createElement('div');
+    persistentContainer.id = 'persistentMusicList';
+    persistentContainer.style.paddingTop = '10px';
+    persistentContainer.style.borderTop = '1px solid #ccc';
+    musikDiv.appendChild(persistentContainer);
+  }
+  
+  // Clear previous content
+  persistentContainer.innerHTML = '<h3>Persistent Music Player</h3>';
+  
+  db.scenes.forEach(scene => {
+    if (scene.musik && scene.musik.length > 0) {
+      // Container for music items of this scene
+      const sceneDiv = document.createElement('div');
+      sceneDiv.classList.add('scene-music');
+      
+      // Header with scene number and scene name
+      const header = document.createElement('h4');
+      header.textContent = `Szene ${scene.sceneNumber}: ${scene.sceneName}`;
+      sceneDiv.appendChild(header);
+      
+      // If the scene is the current scene, display a warning
+      if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
+        const warning = document.createElement('div');
+        warning.style.color = 'red';
+        warning.textContent = 'Achtung Musik!';
+        sceneDiv.appendChild(warning);
+      }
+      
+      // Iterate over all music items in this scene
+      scene.musik.forEach((item, index) => {
+        const itemContainer = document.createElement('div');
+        itemContainer.classList.add('music-item');
+        itemContainer.style.marginBottom = '5px';
+        
+        // Display the filename
+        const fileLabel = document.createElement('span');
+        fileLabel.textContent = item.fileName + ': ';
+        itemContainer.appendChild(fileLabel);
+        
+        // Create the HTML5 audio element with controls
+        const audioElem = document.createElement('audio');
+        audioElem.controls = true;
+        audioElem.src = item.fileUrl;
+        itemContainer.appendChild(audioElem);
+        
+        // In edit mode, add a Delete button for each music item.
+        if (isEditMode) {
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.style.marginLeft = '10px';
+          deleteBtn.addEventListener('click', function(e) {
+            // Remove the item from the scene's musik array
+            const sceneIndex = db.scenes.findIndex(s => s.sceneNumber === scene.sceneNumber);
+            if (sceneIndex !== -1) {
+              db.scenes[sceneIndex].musik.splice(index, 1);
+              renderPersistentMusicList();
+              // If the current scene was affected, also update the editable music list.
+              if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
+                renderMusicList();
+                saveSnapshot(true);
+              }
+            }
+            e.stopPropagation();
+          });
+          itemContainer.appendChild(deleteBtn);
+        }
+        
+        sceneDiv.appendChild(itemContainer);
+      });
+      
+      persistentContainer.appendChild(sceneDiv);
+    }
+  });
+}
