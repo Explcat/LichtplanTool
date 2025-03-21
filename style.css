@@ -127,7 +127,7 @@ body {
 /* Kanalcontainer */
 .channel {
   display: inline-block;
-  margin-left: 25px;
+  margin-left: 17px;
   text-align: center;
 }
 .slider-label {
@@ -136,6 +136,7 @@ body {
   padding: 1px;
 }
 
+
 /* Slider-Container */
 .slider {
   margin: 0 auto;
@@ -143,6 +144,12 @@ body {
   height: 150px;
 }
 
+.noUi-vertical .noUi-tooltip {
+  -webkit-transform: translate(0,-50%);
+  transform: translate(0,-50%);
+  top: 50%;
+  right: -11% !important;
+}
 /* Notizen */
 #notes {
   border: 1px solid #ccc;
@@ -243,6 +250,15 @@ body {
   margin-left: 10px;
 }
 
+#led-slider-value-A
+{
+	display:none;
+}
+#led-slider-value-B
+{
+	display:none;
+}
+
 /* Vertical noUiSlider */
 #led-slider-A,
 #led-slider-B {
@@ -287,12 +303,11 @@ body {
 }
 
 /* Ensure the overall three-column layout for main content */
-#pult-links,
-#led-col,
-#pult-rechts {
+#pult-links
+ {
   display: inline-block;
   vertical-align: top;
-  width: 37%;
+  width: 35%;
   box-sizing: border-box;
   padding: 5px;
 }
@@ -300,7 +315,14 @@ body {
 #led-col {
   display: inline-block;
   vertical-align: top;
-  width: 22%;
+  width: 25%;
+  box-sizing: border-box;
+  padding: 5px;
+}
+#pult-rechts {
+  display: inline-block;
+  vertical-align: top;
+  width: 35%;
   box-sizing: border-box;
   padding: 5px;
 }
