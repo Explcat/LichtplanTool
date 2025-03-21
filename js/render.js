@@ -111,7 +111,7 @@ function renderSceneList() {
       item.classList.add('current');
     }
     // Combine scene number and scene name in the list item.
-    item.textContent = scene.sceneNumber + ": " + scene.sceneName;
+    item.textContent = "Szene " + scene.sceneNumber + ": " + scene.sceneName;
     // Switch scene on click
     item.addEventListener('click', function() {
       saveSnapshot(true);
