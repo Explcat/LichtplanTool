@@ -10,19 +10,21 @@
 <body>
   <div id="flex-container">
     <div id="content-wrapper">
-      <!-- Oberer Szenenbereich: Anzeige der aktuellen Szene -->
-      <div id="szene-id">
-        <span class="scenenumer">Szene: <strong id="sceneNumber">1</strong></span>
-        <span id="szenenameDisplay">[Szenenname]</span>
-        <button id="editSzenenameBtn" style="display:none;">Edit</button>
-      </div>
+      <div id="top-wrapper">
+	  <!-- Oberer Szenenbereich: Anzeige der aktuellen Szene -->
+		  <div id="szene-id">
+			<span class="scenenumer">Szene: <strong id="sceneNumber">1</strong></span>
+			<span id="szenenameDisplay">[Szenenname]</span>
+			<button id="editSzenenameBtn" style="display:none;">Edit</button>
+		  </div>
 
-      <!-- Steuerungsbereich -->
-      <div id="controls">
-        <button id="toggleMode">Wechsel zu Edit Mode</button>
-        <button id="newSzene">Neue Szene einfügen</button>
-        <button id="deleteSzene">Szene löschen</button>
-      </div>
+		  <!-- Steuerungsbereich -->
+		  <div id="controls">
+			<button id="toggleMode">Wechsel zu Edit Mode</button>
+			<button id="newSzene">Neue Szene einfügen</button>
+			<button id="deleteSzene">Szene löschen</button>
+		  </div>
+	  </div>
 	  <!-- Music Section -->
 <div id="musik">
   <span>Musik</span>
@@ -30,6 +32,7 @@
   <button id="addMusicBtn" style="display:none;">Add Music</button>
   <input type="file" id="musicFileInput" accept="audio/mp3, audio/wav, audio/ogg" style="display:none;">
 </div>
+	
       <div id="scenepicture">
         <div id="currentPicture">
           <img id="sceneImg" src="" alt="Aktuelles Szenenbild">
@@ -38,12 +41,14 @@
           <!-- Hidden File Input -->
           <input type="file" id="pictureFileInput" accept="image/jpeg" style="display:none;">
         </div>
-        <div id="nextPictureLabel">nächste Szene</div>
+        <div id="verfolger">
+          <textarea id="verfolgerInput" placeholder="Notizen für Spotlight..."></textarea>
+        </div>
         <div id="nextPicture">
           <img id="nextSceneImg" src="" alt="Nächstes Szenenbild">
         </div>
       </div>
-
+	
       
       <!-- Skip-Buttons -->
       <div id="skipControls">
