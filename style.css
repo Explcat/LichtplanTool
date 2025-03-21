@@ -2,7 +2,7 @@ body {
   font-family: Arial, sans-serif;
   margin: 10px;
   padding: 0;
-  background-color: #ffffff; /* Default background for READ mode */
+  
 }
 
 /* NEW: Flex container for overall layout */
@@ -67,8 +67,8 @@ body {
 }
 
 #scenepicture img {
-  max-height: 100%;
-  max-width: 100%;
+  max-height: 50%;
+  
 }
 /* Add Picture Button im Bildbereich */
 #scenepicture button {
@@ -345,4 +345,17 @@ height: 100%;
 
 #top-wrapper {
 	display:flex;
+}
+
+/*MUSIK*/
+.scene-music {
+	display: flex;
+}
+
+#persistentMusicList {
+	display:flex;
+}
+
+audio {
+	height:20px;
 }
