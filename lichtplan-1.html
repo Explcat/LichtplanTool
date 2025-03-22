@@ -131,7 +131,7 @@
         <button id="exportBtn">Datenbank Speichern</button>
         <input type="file" id="importFile" accept="application/json" style="display:none;">
         <button id="importBtn">Daten importieren</button>
-		 <button id="printPdfBtn">Print to PDF</button>
+		
 		<span>Zwischenspeichern reicht nicht! Szenendatenbank immer richtig speichern! Sicherheitskopien machen!
       </div>
     </div> <!-- end #content-wrapper -->
@@ -146,13 +146,6 @@
   <script src="js/helpers.js"></script>
   <script src="js/render.js"></script>
   <script src="js/events.js"></script>
-  <!-- Include html2pdf.js from a CDN or local file -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<!-- Import the exportPdf.js file -->
-<script src="js/exportPdf.js"></script>
-<script>
-  // Attach click event to the new Print to PDF button
-  document.getElementById('printPdfBtn').addEventListener('click', exportScenesToPdf);
-</script>
+
 </body>
 </html>

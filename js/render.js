@@ -110,8 +110,13 @@ function renderScene() {
   // Update spotlight (Verfolger) textarea value
   document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
 
-  // Render the persistent music player (all scenes)
-  renderPersistentMusicList();
+  
+ // update the persistent music list styles if it already exists.
+  if (document.getElementById('persistentMusicList')) {
+      updatePersistentMusicListStyles();
+  } else {
+      renderPersistentMusicList();
+  }
 
   // Update picture controls based on mode
   updatePictureControls();
@@ -174,96 +179,143 @@ function renderPersistentMusicList() {
     musikDiv.appendChild(persistentContainer);
   }
   
-  // Clear previous content
-  persistentContainer.innerHTML = '';
-  
-  // Sort scenes by sceneNumber in ascending order
+  // Instead of clearing the container (which would remove playing audio),
+  // we now only add new scene items that aren’t already present.
   const sortedScenes = db.scenes.slice().sort((a, b) => a.sceneNumber - b.sceneNumber);
   
   sortedScenes.forEach(scene => {
     if (scene.musik && scene.musik.length > 0) {
-      // Main container for the scene with a grid layout (2 rows)
-      const sceneDiv = document.createElement('div');
-      sceneDiv.classList.add('scene-music');
-
-// If this scene is the current scene, change background color to light red.
-      // Else if it's the next scene, change background color to yellow.
-      const currentScene = db.scenes[currentSceneIndex];
-      const nextScene = db.scenes[currentSceneIndex + 1];
-      if (scene.sceneNumber === currentScene.sceneNumber) {
-        sceneDiv.style.backgroundColor = 'lightcoral';
-      } else if (nextScene && scene.sceneNumber === nextScene.sceneNumber) {
-        sceneDiv.style.backgroundColor = 'yellow';
-      }
-      
-      // Row 1: Header row for scene number, scene name, and optional warning.
-      const headerRow = document.createElement('div');
-      headerRow.classList.add('scene-header');
-      headerRow.textContent = `Szene ${scene.sceneNumber}: ${scene.sceneName}`;
-      sceneDiv.appendChild(headerRow);
-      
-      // If the scene is the current scene, add a warning element
-      if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
-        const warning = document.createElement('div');
-        warning.classList.add('scene-warning');
-        warning.textContent = 'Abspielen!';
-        headerRow.appendChild(warning);
-      }
-      
-      // Row 2: Container for music items
-      const itemsContainer = document.createElement('div');
-      itemsContainer.classList.add('music-items');
-      
-      // Iterate over all music items in this scene
-      scene.musik.forEach((item, index) => {
-        // Each music item is a grid row with fixed column for filename and flexible column for player and button
-        const itemRow = document.createElement('div');
-        itemRow.classList.add('music-item');
+      // Try to find an existing container for this scene.
+      let sceneDiv = persistentContainer.querySelector(`[data-scene-number="${scene.sceneNumber}"]`);
+      if (!sceneDiv) {
+        // Create a new container for this scene.
+        sceneDiv = document.createElement('div');
+        sceneDiv.classList.add('scene-music');
+        sceneDiv.setAttribute('data-scene-number', scene.sceneNumber);
+        persistentContainer.appendChild(sceneDiv);
         
-        // Column 1: Filename with a fixed width
-        const fileLabel = document.createElement('div');
-        fileLabel.classList.add('music-filename');
-        fileLabel.textContent = item.fileName + ':';
-        itemRow.appendChild(fileLabel);
+        // Row 1: Header row for scene number, scene name, and optional warning.
+        const headerRow = document.createElement('div');
+        headerRow.classList.add('scene-header');
+        headerRow.textContent = `Szene ${scene.sceneNumber}: ${scene.sceneName}`;
+        sceneDiv.appendChild(headerRow);
         
-        // Column 2: HTML5 audio element
-        const audioContainer = document.createElement('div');
-        audioContainer.classList.add('music-player');
-        const audioElem = document.createElement('audio');
-        audioElem.controls = true;
-        audioElem.src = item.fileUrl;
-        audioContainer.appendChild(audioElem);
-        itemRow.appendChild(audioContainer);
-        
-        // Column 3: In edit mode, add a Delete button
-        if (isEditMode) {
-          const btnContainer = document.createElement('div');
-          btnContainer.classList.add('music-actions');
-          const deleteBtn = document.createElement('button');
-          deleteBtn.textContent = 'Delete';
-          deleteBtn.addEventListener('click', function(e) {
-            // Remove the item from the scene's musik array
-            const sceneIndex = db.scenes.findIndex(s => s.sceneNumber === scene.sceneNumber);
-            if (sceneIndex !== -1) {
-              db.scenes[sceneIndex].musik.splice(index, 1);
-              renderPersistentMusicList();
-              // If the current scene was affected, update the snapshot.
-              if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
-                saveSnapshot(true);
-              }
-            }
-            e.stopPropagation();
-          });
-          btnContainer.appendChild(deleteBtn);
-          itemRow.appendChild(btnContainer);
+        // If the scene is the current scene, add the warning element.
+        if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
+          const warning = document.createElement('div');
+          warning.classList.add('scene-warning');
+          warning.textContent = 'Abspielen!';
+          headerRow.appendChild(warning);
         }
         
-        itemsContainer.appendChild(itemRow);
-      });
-      
-      sceneDiv.appendChild(itemsContainer);
-      persistentContainer.appendChild(sceneDiv);
+        // Row 2: Container for music items.
+        const itemsContainer = document.createElement('div');
+        itemsContainer.classList.add('music-items');
+        
+        // Iterate over all music items in this scene.
+        scene.musik.forEach((item, index) => {
+          // Each music item is rendered as a grid row.
+          const itemRow = document.createElement('div');
+          itemRow.classList.add('music-item');
+          
+          // Column 1: Filename label.
+          const fileLabel = document.createElement('div');
+          fileLabel.classList.add('music-filename');
+          fileLabel.textContent = item.fileName + ':';
+          itemRow.appendChild(fileLabel);
+          
+          // Column 2: Audio player.
+          const audioContainer = document.createElement('div');
+          audioContainer.classList.add('music-player');
+          const audioElem = document.createElement('audio');
+          audioElem.controls = true;
+          audioElem.src = item.fileUrl;
+		   // Prevent arrow keys from altering the media player's timeline by stopping propagation.
+       audioElem.addEventListener('keydown', function(e) {
+           if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+               e.stopPropagation();
+           }
+       });
+          audioContainer.appendChild(audioElem);
+          itemRow.appendChild(audioContainer);
+          
+          // Column 3: Delete button (only in edit mode).
+          if (isEditMode) {
+            const btnContainer = document.createElement('div');
+            btnContainer.classList.add('music-actions');
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.addEventListener('click', function(e) {
+              // Remove the item from the scene's musik array.
+              const sceneIndex = db.scenes.findIndex(s => s.sceneNumber === scene.sceneNumber);
+              if (sceneIndex !== -1) {
+                db.scenes[sceneIndex].musik.splice(index, 1);
+                // If no music remains for this scene, remove its container.
+                if (db.scenes[sceneIndex].musik.length === 0) {
+                  sceneDiv.remove();
+                }
+                // If the current scene was affected, update the snapshot.
+                if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
+                  saveSnapshot(true);
+                }
+              }
+              e.stopPropagation();
+            });
+            btnContainer.appendChild(deleteBtn);
+            itemRow.appendChild(btnContainer);
+          }
+          
+          itemsContainer.appendChild(itemRow);
+        });
+        
+        sceneDiv.appendChild(itemsContainer);
+      }
+      // If sceneDiv already exists, you could update header text or music items here if needed.
     }
   });
 }
 
+/**
+ * Updates the background colors and warning texts of persistent music list items
+ * based on the current and next scenes.
+ */
+function updatePersistentMusicListStyles() {
+  const persistentContainer = document.getElementById('persistentMusicList');
+  if (!persistentContainer) return;
+
+  const currentScene = db.scenes[currentSceneIndex];
+  const nextScene = db.scenes[currentSceneIndex + 1];
+
+  Array.from(persistentContainer.children).forEach(sceneDiv => {
+    const sceneNumber = parseInt(sceneDiv.getAttribute('data-scene-number'), 10);
+    
+    // Update background colors.
+    if (sceneNumber === currentScene.sceneNumber) {
+      sceneDiv.style.backgroundColor = 'lightcoral';
+    } else if (nextScene && sceneNumber === nextScene.sceneNumber) {
+      sceneDiv.style.backgroundColor = 'yellow';
+    } else {
+      sceneDiv.style.backgroundColor = '';
+    }
+    
+    // Update the warning ("Abspielen!") in the header row.
+    const headerRow = sceneDiv.querySelector('.scene-header');
+    if (headerRow) {
+      const existingWarning = headerRow.querySelector('.scene-warning');
+      if (sceneNumber === currentScene.sceneNumber) {
+        if (!existingWarning) {
+          const warning = document.createElement('div');
+          warning.classList.add('scene-warning');
+          warning.textContent = 'Abspielen!';
+          headerRow.appendChild(warning);
+        } else {
+          existingWarning.textContent = 'Abspielen!';
+        }
+      } else {
+        if (existingWarning) {
+          existingWarning.remove();
+        }
+      }
+    }
+  });
+}
