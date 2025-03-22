@@ -53,21 +53,43 @@ function renderScene() {
   renderSceneList();
 
   // Render LED Buttons and Sliders for current scene (Section A)
-  const ledButtonsA = document.querySelectorAll('#led-buttons-SectionA .led-btn');
-  ledButtonsA.forEach((btn, index) => {
-    if (currentScene.led && currentScene.led[index]) {
-      btn.classList.add('on');
-      btn.style.backgroundColor = 'green';
-    } else {
-      btn.classList.remove('on');
-      btn.style.backgroundColor = 'white';
-    }
-  });
-  const ledSliderA = document.getElementById('led-slider-A');
-  if (ledSliderA && ledSliderA.noUiSlider) {
-    ledSliderA.noUiSlider.set(currentScene.ledSlider);
-    updateLEDSliderValue(ledSliderA.noUiSlider.get(), 'led-slider-value-A');
+const ledButtonsA = document.querySelectorAll('#led-buttons-SectionA .led-btn');
+ledButtonsA.forEach((btn, index) => {
+  if (currentScene.led && currentScene.led[index]) {
+    btn.classList.add('on');
+    btn.style.backgroundColor = 'green';
+  } else {
+    btn.classList.remove('on');
+    btn.style.backgroundColor = 'white';
   }
+});
+const ledSliderA = document.getElementById('led-slider-A');
+if (ledSliderA && ledSliderA.noUiSlider) {
+  ledSliderA.noUiSlider.set(currentScene.ledSlider);
+  updateLEDSliderValue(ledSliderA.noUiSlider.get(), 'led-slider-value-A');
+}
+
+// NEW FEATURE: Check if current scene has music items and render warning under LED Section A
+const ledSectionA = document.getElementById('led-sectionA');
+let existingWarningA = document.getElementById('led-warning-A');
+if (currentScene.musik && currentScene.musik.length > 0) {
+  if (!existingWarningA) {
+    existingWarningA = document.createElement('div');
+    existingWarningA.id = 'led-warning-A';
+    existingWarningA.textContent = 'Musik abspielen';
+    // Optional styling for the warning:
+    existingWarningA.style.color = 'red';
+    existingWarningA.style.fontWeight = 'bold';
+    existingWarningA.style.backgroundColor = 'lightcoral';
+    existingWarningA.style.textAlign = 'center';
+    existingWarningA.style.marginTop = '10px';
+    ledSectionA.appendChild(existingWarningA);
+  }
+} else {
+  if (existingWarningA) {
+    existingWarningA.remove();
+  }
+}
 
   // Render LED Buttons and Sliders for next scene (Section B) - read-only
   const ledButtonsB = document.querySelectorAll('#led-buttons-SectionB .led-btn');
@@ -168,7 +190,6 @@ function updatePictureControls() {
  * In edit mode, each music item also gets a Delete button.
  */
 function renderPersistentMusicList() {
-  // Use (or create) a container with id "persistentMusicList" inside the #musik section.
   let persistentContainer = document.getElementById('persistentMusicList');
   if (!persistentContainer) {
     const musikDiv = document.getElementById('musik');
@@ -177,103 +198,85 @@ function renderPersistentMusicList() {
     persistentContainer.style.paddingTop = '10px';
     persistentContainer.style.borderTop = '1px solid #ccc';
     musikDiv.appendChild(persistentContainer);
+  } else {
+    // Important: clear first so new items always show
+    persistentContainer.innerHTML = '';
   }
   
-  // Instead of clearing the container (which would remove playing audio),
-  // we now only add new scene items that aren’t already present.
   const sortedScenes = db.scenes.slice().sort((a, b) => a.sceneNumber - b.sceneNumber);
   
   sortedScenes.forEach(scene => {
     if (scene.musik && scene.musik.length > 0) {
-      // Try to find an existing container for this scene.
-      let sceneDiv = persistentContainer.querySelector(`[data-scene-number="${scene.sceneNumber}"]`);
-      if (!sceneDiv) {
-        // Create a new container for this scene.
-        sceneDiv = document.createElement('div');
-        sceneDiv.classList.add('scene-music');
-        sceneDiv.setAttribute('data-scene-number', scene.sceneNumber);
-        persistentContainer.appendChild(sceneDiv);
-        
-        // Row 1: Header row for scene number, scene name, and optional warning.
-        const headerRow = document.createElement('div');
-        headerRow.classList.add('scene-header');
-        headerRow.textContent = `Szene ${scene.sceneNumber}: ${scene.sceneName}`;
-        sceneDiv.appendChild(headerRow);
-        
-        // If the scene is the current scene, add the warning element.
-        if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
-          const warning = document.createElement('div');
-          warning.classList.add('scene-warning');
-          warning.textContent = 'Abspielen!';
-          headerRow.appendChild(warning);
-        }
-        
-        // Row 2: Container for music items.
-        const itemsContainer = document.createElement('div');
-        itemsContainer.classList.add('music-items');
-        
-        // Iterate over all music items in this scene.
-        scene.musik.forEach((item, index) => {
-          // Each music item is rendered as a grid row.
-          const itemRow = document.createElement('div');
-          itemRow.classList.add('music-item');
-          
-          // Column 1: Filename label.
-          const fileLabel = document.createElement('div');
-          fileLabel.classList.add('music-filename');
-          fileLabel.textContent = item.fileName + ':';
-          itemRow.appendChild(fileLabel);
-          
-          // Column 2: Audio player.
-          const audioContainer = document.createElement('div');
-          audioContainer.classList.add('music-player');
-          const audioElem = document.createElement('audio');
-          audioElem.controls = true;
-          audioElem.src = item.fileUrl;
-		   // Prevent arrow keys from altering the media player's timeline by stopping propagation.
-       audioElem.addEventListener('keydown', function(e) {
-           if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-               e.stopPropagation();
-           }
-       });
-          audioContainer.appendChild(audioElem);
-          itemRow.appendChild(audioContainer);
-          
-          // Column 3: Delete button (only in edit mode).
-          if (isEditMode) {
-            const btnContainer = document.createElement('div');
-            btnContainer.classList.add('music-actions');
-            const deleteBtn = document.createElement('button');
-            deleteBtn.textContent = 'Delete';
-            deleteBtn.addEventListener('click', function(e) {
-              // Remove the item from the scene's musik array.
-              const sceneIndex = db.scenes.findIndex(s => s.sceneNumber === scene.sceneNumber);
-              if (sceneIndex !== -1) {
-                db.scenes[sceneIndex].musik.splice(index, 1);
-                // If no music remains for this scene, remove its container.
-                if (db.scenes[sceneIndex].musik.length === 0) {
-                  sceneDiv.remove();
-                }
-                // If the current scene was affected, update the snapshot.
-                if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
-                  saveSnapshot(true);
-                }
-              }
-              e.stopPropagation();
-            });
-            btnContainer.appendChild(deleteBtn);
-            itemRow.appendChild(btnContainer);
-          }
-          
-          itemsContainer.appendChild(itemRow);
-        });
-        
-        sceneDiv.appendChild(itemsContainer);
+      const sceneDiv = document.createElement('div');
+      sceneDiv.classList.add('scene-music');
+      sceneDiv.setAttribute('data-scene-number', scene.sceneNumber);
+      persistentContainer.appendChild(sceneDiv);
+
+      // Scene header
+      const headerRow = document.createElement('div');
+      headerRow.classList.add('scene-header');
+      headerRow.textContent = `Szene ${scene.sceneNumber}: ${scene.sceneName}`;
+      sceneDiv.appendChild(headerRow);
+
+      // If this is the current scene, add a "Play" warning
+      if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
+        const warning = document.createElement('div');
+        warning.classList.add('scene-warning');
+        warning.textContent = 'Abspielen!';
+        headerRow.appendChild(warning);
       }
-      // If sceneDiv already exists, you could update header text or music items here if needed.
+      
+      // Music items
+      const itemsContainer = document.createElement('div');
+      itemsContainer.classList.add('music-items');
+      scene.musik.forEach((item, index) => {
+        const itemRow = document.createElement('div');
+        itemRow.classList.add('music-item');
+        
+        // Filename
+        const fileLabel = document.createElement('div');
+        fileLabel.classList.add('music-filename');
+        fileLabel.textContent = item.fileName + ':';
+        itemRow.appendChild(fileLabel);
+
+        // Audio element
+        const audioContainer = document.createElement('div');
+        audioContainer.classList.add('music-player');
+        const audioElem = document.createElement('audio');
+        audioElem.controls = true;
+        audioElem.src = item.fileUrl;
+        // Don’t let arrow keys skip scenes
+        audioElem.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.stopPropagation();
+          }
+        });
+        audioContainer.appendChild(audioElem);
+        itemRow.appendChild(audioContainer);
+
+        // Delete button if in edit mode
+        if (isEditMode) {
+          const btnContainer = document.createElement('div');
+          btnContainer.classList.add('music-actions');
+          const deleteBtn = document.createElement('button');
+          deleteBtn.textContent = 'Delete';
+          deleteBtn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            deleteMusicItem(scene.sceneNumber, index);
+          });
+          btnContainer.appendChild(deleteBtn);
+          itemRow.appendChild(btnContainer);
+        }
+
+        itemsContainer.appendChild(itemRow);
+      });
+      
+      sceneDiv.appendChild(itemsContainer);
     }
   });
 }
+
+
 
 /**
  * Updates the background colors and warning texts of persistent music list items

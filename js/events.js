@@ -84,26 +84,47 @@ document.getElementById('musicFileInput').addEventListener('change', function(ev
   const file = event.target.files[0];
   if (!file) return;
   
-  // Limit to 5 music items per scene.
-  if (musicItems.length >= 5) {
-    alert('Maximal 5 Musikdateien sind erlaubt.');
+  if (musicItems.length >= 10) {
+    alert('Maximal 5 Musikdateien pro Szene sind erlaubt. Das kannst du im Code in der Datei events.js ändern');
     return;
   }
   
-  // Construct the local URL for the music file (files are assumed to be in the /szenenmusik folder).
   const fileUrl = 'szenenmusik/' + file.name;
   const fileName = file.name;
   
-  // Save the music item to the current scene's music array.
+  // Add the new music item to the global musicItems array.
   musicItems.push({ fileUrl, fileName, audio: null });
   
-  // Update the persistent music player.
-  renderPersistentMusicList();
+  // Update the current scene's musik array immediately.
+  db.scenes[currentSceneIndex].musik = [...musicItems];
   
-  // Optionally, save the snapshot to persist the change.
+  // Persist the changes.
   saveSnapshot(true);
+  
+  // Use a slight delay to allow the DOM to update before re-rendering.
+  setTimeout(() => {
+    renderPersistentMusicList();
+  }, 100);
 });
 
+function deleteMusicItem(sceneNumber, musicIndex) {
+  const sceneIndex = db.scenes.findIndex(s => s.sceneNumber === sceneNumber);
+  if (sceneIndex === -1) return;
+
+  // Remove from that scene’s musik array
+  db.scenes[sceneIndex].musik.splice(musicIndex, 1);
+
+  // Also remove from local `musicItems` if it’s the CURRENT scene
+  if (sceneIndex === currentSceneIndex) {
+    musicItems.splice(musicIndex, 1);
+  }
+
+  // Now persist it
+  saveSnapshot(true);
+
+  // Re-render the persistent music list so the UI is updated
+  renderPersistentMusicList();
+}
 
 /*********************** Mode & Snapshot Handling ************************/
 /**
@@ -145,25 +166,22 @@ toggleModeButton.addEventListener('click', function() {
   isEditMode = !isEditMode;
   toggleModeButton.textContent = isEditMode ? 'Wechsel zu Read Mode' : 'Wechsel zu Edit Mode';
   editSzenenameBtn.style.display = isEditMode ? 'inline-block' : 'none';
-  // Update the new scene and delete scene buttons
   document.getElementById('newSzene').style.display = isEditMode ? 'inline-block' : 'none';
   document.getElementById('deleteSzene').style.display = isEditMode ? 'inline-block' : 'none';
-  
-  // Update the Add Music button display based on mode.
   document.getElementById('addMusicBtn').style.display = isEditMode ? 'inline-block' : 'none';
-  
-  // Update the notes textarea readOnly property
   document.getElementById('notes').readOnly = !isEditMode;
   updatePictureControls();
 
-  // Update pointer events for LED slider in section A
   const ledSliderA = document.getElementById('led-slider-A');
   if (ledSliderA) {
     ledSliderA.style.pointerEvents = isEditMode ? 'auto' : 'none';
   }
   
   renderScene();
+  // Re-render persistent music list to update delete buttons based on mode.
+  renderPersistentMusicList();
 });
+
 
 /*********************** Scene Navigation ************************/
 document.getElementById('prevScene').addEventListener('click', function() {
