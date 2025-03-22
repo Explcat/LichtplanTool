@@ -65,13 +65,7 @@
         false
       ],
       "ledSlider": 25,
-      "musik": [
-        {
-          "fileUrl": "szenenmusik/saebeltanz.wav",
-          "fileName": "saebeltanz.wav",
-          "audio": null
-        }
-      ],
+      "musik": [],
       "verfolger": "ACHTUNG SPOT BREIT GENUG EINSTELLEN für bei Erzähler!\nSpot begleitet"
     },
     {
@@ -2452,7 +2446,13 @@
       ],
       "ledSlider": 100,
       "verfolger": "MUSIKEinsatz - \"Wer ist Stjephan?\" Zora: \"Das erzähl ich dir auf dem Weg!\"[Musik]\nKampf mit den Gymnasiasten! Strobo/Disco!",
-      "musik": []
+      "musik": [
+        {
+          "fileUrl": "szenenmusik/saebeltanz.wav",
+          "fileName": "saebeltanz.wav",
+          "audio": null
+        }
+      ]
     },
     {
       "sceneNumber": 37,
@@ -3199,7 +3199,13 @@
         false
       ],
       "ledSlider": 21,
-      "musik": [],
+      "musik": [
+        {
+          "fileUrl": "szenenmusik/WaldmitUhu.wav",
+          "fileName": "WaldmitUhu.wav",
+          "audio": null
+        }
+      ],
       "verfolger": "[Musik] Startet laut dann leiser\n[Licht]Wechsel zwischen Wald und Erzähler"
     },
     {
