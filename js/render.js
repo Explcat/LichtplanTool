@@ -6,6 +6,9 @@
 function renderScene() {
   const currentScene = db.scenes[currentSceneIndex];
 
+  // >>> FIX: Sync the global musicItems with current scene’s musik array
+  musicItems = currentScene.musik ? [...currentScene.musik] : [];
+
   // Ensure default LED values if missing.
   if (!currentScene.led || currentScene.led.length !== 24) {
     currentScene.led = new Array(24).fill(false);
@@ -60,7 +63,6 @@ function renderScene() {
       btn.style.backgroundColor = 'white';
     }
   });
-  // Update LED slider for current scene
   const ledSliderA = document.getElementById('led-slider-A');
   if (ledSliderA && ledSliderA.noUiSlider) {
     ledSliderA.noUiSlider.set(currentScene.ledSlider);
@@ -83,10 +85,10 @@ function renderScene() {
     ledSliderB.noUiSlider.set(nextScene.ledSlider || 0);
     updateLEDSliderValue(ledSliderB.noUiSlider.get(), 'led-slider-value-B');
   }
-  
+
   // Update spotlight (Verfolger) textarea value
   document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
-  
+
   // Render the persistent music player (all scenes)
   renderPersistentMusicList();
 
@@ -96,6 +98,7 @@ function renderScene() {
   // Update body background color based on mode
   document.body.style.backgroundColor = isEditMode ? '#ffffe0' : '#ffffff';
 }
+
 
 /**
  * Renders the scene list on the right.

@@ -74,6 +74,35 @@ pictureFileInput.addEventListener('change', function(event) {
 });
 
 /*********************** Music Section Events ************************/
+// When the "Add Music" button is clicked, open the hidden file input.
+document.getElementById('addMusicBtn').addEventListener('click', function(){
+  document.getElementById('musicFileInput').click();
+});
+
+// When a music file is selected, validate and add it to the current scene.
+document.getElementById('musicFileInput').addEventListener('change', function(event){
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  // Limit to 5 music items per scene.
+  if (musicItems.length >= 5) {
+    alert('Maximal 5 Musikdateien sind erlaubt.');
+    return;
+  }
+  
+  // Construct the local URL for the music file (files are assumed to be in the /szenenmusik folder).
+  const fileUrl = 'szenenmusik/' + file.name;
+  const fileName = file.name;
+  
+  // Save the music item to the current scene's music array.
+  musicItems.push({ fileUrl, fileName, audio: null });
+  
+  // Update the persistent music player.
+  renderPersistentMusicList();
+  
+  // Optionally, save the snapshot to persist the change.
+  saveSnapshot(true);
+});
 
 
 /*********************** Mode & Snapshot Handling ************************/
@@ -102,14 +131,15 @@ function saveSnapshot(silent) {
   // Save spotlight (Verfolger) notes from textarea
   scene.verfolger = document.getElementById('verfolgerInput').value;
   
-  // Save the current scene's music items.
-  scene.musik = musicItems;
+  // Save the current scene's music items as a copy (not the reference)
+  scene.musik = [...musicItems];
 
   saveJsonDB();
   if (!silent) {
     alert('Snapshot gespeichert!');
   }
 }
+
 
 toggleModeButton.addEventListener('click', function() {
   isEditMode = !isEditMode;
