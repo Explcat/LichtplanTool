@@ -127,6 +127,7 @@ height: 100%;
   vertical-align: top;
   width: 45%;
   border: 1px solid #ccc;
+  border-radius: 5px;
   padding: 10px;
   margin: 5px;
   background-color: #919191;
@@ -347,3 +348,8 @@ height: 100%;
 	display:flex;
 }
 
+/* Add a custom gap between the two groups of sliders for pultRechts */
+.slider-gap {
+  width: 100%;
+  height: 20px; /* Adjust the gap height as needed */
+}

@@ -29,9 +29,30 @@ function createSlider(element, startValue, readOnly = false) {
 function createChannelSliders(containerId, values, readOnly = false) {
   const container = document.getElementById(containerId);
   container.innerHTML = '';
+  
+  // If this is a pultRechts container, apply horizontal flex layout.
+  if (containerId.indexOf('rechts') !== -1) {
+    container.style.display = 'flex';
+    container.style.flexWrap = 'nowrap';
+    container.style.alignItems = 'flex-start';
+  }
+
   for (let i = 0; i < 12; i++) {
+    // For pultRechts, insert a small gap after the 6th fader.
+    if (i === 6 && containerId.indexOf('rechts') !== -1) {
+      const gapDiv = document.createElement('div');
+      gapDiv.style.width = '20px';  // Adjust gap width as needed.
+      gapDiv.style.display = 'inline-block';
+      container.appendChild(gapDiv);
+    }
+    
     const chanDiv = document.createElement('div');
     chanDiv.classList.add('channel');
+    
+    // For pultRechts ensure each channel is an inline-block item.
+    if (containerId.indexOf('rechts') !== -1) {
+      chanDiv.style.display = 'inline-block';
+    }
 
     // Label above the slider
     const label = document.createElement('div');
@@ -50,6 +71,7 @@ function createChannelSliders(containerId, values, readOnly = false) {
     createSlider(sliderDiv, initial, readOnly);
   }
 }
+
 
 /**
  * Initializes the LED button grid (4 rows x 6 columns) in a given container.

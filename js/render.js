@@ -85,6 +85,27 @@ function renderScene() {
     ledSliderB.noUiSlider.set(nextScene.ledSlider || 0);
     updateLEDSliderValue(ledSliderB.noUiSlider.get(), 'led-slider-value-B');
   }
+   // NEW FEATURE: Check if next scene has music items and render warning under LED Section B
+  const ledSectionB = document.getElementById('led-sectionB');
+  let existingWarning = document.getElementById('led-warning-B');
+  if (nextScene.musik && nextScene.musik.length > 0) {
+    if (!existingWarning) {
+      existingWarning = document.createElement('div');
+      existingWarning.id = 'led-warning-B';
+      existingWarning.textContent = 'Musik gleich!';
+      // Optional styling for the warning
+      existingWarning.style.color = 'red';
+      existingWarning.style.fontWeight = 'bold';
+	  existingWarning.style.backgroundColor ='yellow';
+      existingWarning.style.textAlign = 'center';
+      existingWarning.style.marginTop = '10px';
+      ledSectionB.appendChild(existingWarning);
+    }
+  } else {
+    if (existingWarning) {
+      existingWarning.remove();
+    }
+  }
 
   // Update spotlight (Verfolger) textarea value
   document.getElementById('verfolgerInput').value = currentScene.verfolger || '';
@@ -164,6 +185,16 @@ function renderPersistentMusicList() {
       // Main container for the scene with a grid layout (2 rows)
       const sceneDiv = document.createElement('div');
       sceneDiv.classList.add('scene-music');
+
+// If this scene is the current scene, change background color to light red.
+      // Else if it's the next scene, change background color to yellow.
+      const currentScene = db.scenes[currentSceneIndex];
+      const nextScene = db.scenes[currentSceneIndex + 1];
+      if (scene.sceneNumber === currentScene.sceneNumber) {
+        sceneDiv.style.backgroundColor = 'lightcoral';
+      } else if (nextScene && scene.sceneNumber === nextScene.sceneNumber) {
+        sceneDiv.style.backgroundColor = 'yellow';
+      }
       
       // Row 1: Header row for scene number, scene name, and optional warning.
       const headerRow = document.createElement('div');
@@ -175,7 +206,7 @@ function renderPersistentMusicList() {
       if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
         const warning = document.createElement('div');
         warning.classList.add('scene-warning');
-        warning.textContent = 'Achtung Musik!';
+        warning.textContent = 'Abspielen!';
         headerRow.appendChild(warning);
       }
       
