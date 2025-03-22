@@ -347,15 +347,3 @@ height: 100%;
 	display:flex;
 }
 
-/*MUSIK*/
-.scene-music {
-	display: flex;
-}
-
-#persistentMusicList {
-	display:flex;
-}
-
-audio {
-	height:20px;
-}

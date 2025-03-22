@@ -1,0 +1,84 @@
+/* Persistent Music List Container */
+#persistentMusicList {
+  border-top: 2px solid #ddd;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Main container for each scene using a grid for 2 rows */
+.scene-music {
+  display: grid;
+  grid-template-rows: auto auto;
+  padding: 2px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+/* Header row styling (Row 1) */
+.scene-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #333;
+}
+
+/* Warning text styling within header */
+.scene-warning {
+  color: red;
+  margin-left: 10px;
+  font-size: 0.9em;
+}
+
+/* Container for music items (Row 2) */
+.music-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Each music item row using CSS Grid with 3 columns:
+   - Fixed width for filename,
+   - Flexible width for the audio player,
+   - Auto width for the delete button (if present)
+*/
+.music-item {
+  display: grid;
+  grid-template-columns: 150px 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.music-item:last-child {
+  border-bottom: none;
+}
+
+/* Styling for the filename column */
+.music-filename {
+  color: #555;
+}
+
+/* Styling for the audio player column */
+.music-player audio {
+  height: 20px;
+  width: 100%;
+}
+
+/* Delete button styling in the actions column */
+.music-actions button {
+  background-color: #d9534f;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.music-actions button:hover {
+  background-color: #c9302c;
+}

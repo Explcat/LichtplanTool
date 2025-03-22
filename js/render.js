@@ -156,47 +156,60 @@ function renderPersistentMusicList() {
   // Clear previous content
   persistentContainer.innerHTML = '';
   
-  db.scenes.forEach(scene => {
+  // Sort scenes by sceneNumber in ascending order
+  const sortedScenes = db.scenes.slice().sort((a, b) => a.sceneNumber - b.sceneNumber);
+  
+  sortedScenes.forEach(scene => {
     if (scene.musik && scene.musik.length > 0) {
-      // Container for music items of this scene
+      // Main container for the scene with a grid layout (2 rows)
       const sceneDiv = document.createElement('div');
       sceneDiv.classList.add('scene-music');
       
-      // Header with scene number and scene name
-      const header = document.createElement('span');
-      header.textContent = `Szene ${scene.sceneNumber}: ${scene.sceneName}`;
-      sceneDiv.appendChild(header);
+      // Row 1: Header row for scene number, scene name, and optional warning.
+      const headerRow = document.createElement('div');
+      headerRow.classList.add('scene-header');
+      headerRow.textContent = `Szene ${scene.sceneNumber}: ${scene.sceneName}`;
+      sceneDiv.appendChild(headerRow);
       
-      // If the scene is the current scene, display a warning
+      // If the scene is the current scene, add a warning element
       if (scene.sceneNumber === db.scenes[currentSceneIndex].sceneNumber) {
         const warning = document.createElement('div');
-        warning.style.color = 'red';
+        warning.classList.add('scene-warning');
         warning.textContent = 'Achtung Musik!';
-        sceneDiv.appendChild(warning);
+        headerRow.appendChild(warning);
       }
+      
+      // Row 2: Container for music items
+      const itemsContainer = document.createElement('div');
+      itemsContainer.classList.add('music-items');
       
       // Iterate over all music items in this scene
       scene.musik.forEach((item, index) => {
-        const itemContainer = document.createElement('div');
-        itemContainer.classList.add('music-item');
-       
+        // Each music item is a grid row with fixed column for filename and flexible column for player and button
+        const itemRow = document.createElement('div');
+        itemRow.classList.add('music-item');
         
-        // Display the filename
-        const fileLabel = document.createElement('span');
-        fileLabel.textContent = item.fileName + ': ';
-        itemContainer.appendChild(fileLabel);
+        // Column 1: Filename with a fixed width
+        const fileLabel = document.createElement('div');
+        fileLabel.classList.add('music-filename');
+        fileLabel.textContent = item.fileName + ':';
+        itemRow.appendChild(fileLabel);
         
-        // Create the HTML5 audio element with controls
+        // Column 2: HTML5 audio element
+        const audioContainer = document.createElement('div');
+        audioContainer.classList.add('music-player');
         const audioElem = document.createElement('audio');
         audioElem.controls = true;
         audioElem.src = item.fileUrl;
-        itemContainer.appendChild(audioElem);
+        audioContainer.appendChild(audioElem);
+        itemRow.appendChild(audioContainer);
         
-        // In edit mode, add a Delete button for each music item.
+        // Column 3: In edit mode, add a Delete button
         if (isEditMode) {
+          const btnContainer = document.createElement('div');
+          btnContainer.classList.add('music-actions');
           const deleteBtn = document.createElement('button');
           deleteBtn.textContent = 'Delete';
-          deleteBtn.style.marginLeft = '10px';
           deleteBtn.addEventListener('click', function(e) {
             // Remove the item from the scene's musik array
             const sceneIndex = db.scenes.findIndex(s => s.sceneNumber === scene.sceneNumber);
@@ -210,13 +223,16 @@ function renderPersistentMusicList() {
             }
             e.stopPropagation();
           });
-          itemContainer.appendChild(deleteBtn);
+          btnContainer.appendChild(deleteBtn);
+          itemRow.appendChild(btnContainer);
         }
         
-        sceneDiv.appendChild(itemContainer);
+        itemsContainer.appendChild(itemRow);
       });
       
+      sceneDiv.appendChild(itemsContainer);
       persistentContainer.appendChild(sceneDiv);
     }
   });
 }
+
