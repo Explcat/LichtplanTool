@@ -67,7 +67,7 @@ body {
 }
 
 #scenepicture img {
-  max-height: 50%;
+  max-height: 156px;
   
 }
 /* Add Picture Button im Bildbereich */
@@ -107,9 +107,7 @@ height: 100%;
 /* Bilder innerhalb der Container */
 #currentPicture img,
 #nextPicture img {
-  max-width: 50%;
-  max-height: 50%;
-  object-fit: contain;
+
 }
 
 

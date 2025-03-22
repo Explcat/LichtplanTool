@@ -17,7 +17,7 @@ function createEmptyScene(sceneNumber) {
     sceneName: 'Szene ' + sceneNumber,
     nextszenename: '',
     notes: '',
-    image: '',  // Bild als DataURL
+    image: 'szenenbilder/default.jpg',  // Das standard Bild für neue Szenen
     pultLinks: { sectionA: new Array(12).fill(0) },
     pultRechts: { sectionA: new Array(12).fill(0) },
     led: new Array(24).fill(false),      // LED buttons for current scene
