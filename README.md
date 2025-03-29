@@ -12,10 +12,10 @@ Hi! This is a very simple tool to take notes for theater plays at our school. We
 ## Overview / Überblick
 
 **ENGLISH:**  
-LichtplanTool is a simple web application used to manage lighting scenes. The app allows you to create, edit, and navigate through scenes. Each scene can have its own settings such as slider values, LED button states, images, and even music files.
+LichtplanTool is a simple web application used to build a list of Szenes for a play. And TAKE NOTES of slider positions and manage lighting scenes. The app allows you to create, edit, and navigate through scenes. Each scene can have its own settings such as slider values, LED button states, images, and even music files.
 
 **DEUTSCH:**  
-LichtplanTool ist eine einfache Webanwendung, mit der du Licht-Szenen verwalten kannst. Mit der App kannst du Szenen erstellen, bearbeiten und zwischen ihnen navigieren. Jede Szene hat eigene Einstellungen, wie Slider-Werte, LED-Button-Zustände, Bilder und sogar Musikdateien.
+LichtplanTool ist eine einfache Webanwendung, mit der du ein List von Szenen erstellen, die Regler EINSTELLUNG von Licht-Szenen notieren und verwalten kannst. Mit der App kannst du Szenen erstellen, bearbeiten und zwischen ihnen navigieren. Jede Szene hat eigene Einstellungen, wie Slider-Werte, LED-Button-Zustände, Bilder und sogar Musikdateien.
 
 ---
 
