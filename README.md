@@ -19,6 +19,47 @@ LichtplanTool is a simple web application used to build a list of Szenes for a p
 LichtplanTool ist eine einfache Webanwendung, mit der du ein List von Szenen erstellen, die Regler EINSTELLUNG von Licht-Szenen notieren und verwalten kannst. Mit der App kannst du Szenen erstellen, bearbeiten und zwischen ihnen navigieren. Jede Szene hat eigene Einstellungen, wie Slider-Werte, LED-Button-Zustände, Bilder und sogar Musikdateien.
 
 ---
+## Installation & Setup / Installation und Einrichtung
+
+**ENGLISH:**  
+Since this project is intended for offline use only, follow these simple steps:
+
+1. **Download the Release ZIP:**  
+   Download the ZIP file from the Git repository release page.
+   https://github.com/Explcat/LichtplanTool/releases/download/v1.0.0/LichtplanTool.zip
+
+3. **Unzip the File:**  
+   Extract the contents to a folder on your computer.
+
+4. **Run the App Locally:**  
+   Open the `lichtplan-montag.html` file in your web browser by double-clicking it.  
+   **Note:** This project is not designed to run on a server and is not secure for online use.
+
+**DEUTSCH:**  
+Da dieses Projekt ausschließlich offline genutzt werden soll, befolge diese einfachen Schritte:
+
+1. **Release-ZIP herunterladen:**  
+   Lade die ZIP-Datei von der Git-Repository-Release-Seite herunter.
+   https://github.com/Explcat/LichtplanTool/releases/download/v1.0.0/LichtplanTool.zip
+
+3. **ZIP entpacken:**  
+   Entpacke den Inhalt in einen Ordner auf deinem Computer.
+
+4. **App lokal starten:**  
+   Öffne die Datei `lichtplan.html` in deinem Webbrowser, indem du darauf doppelklickst.  
+   **Hinweis:** Dieses Projekt ist nicht für den Einsatz auf einem Server konzipiert und nicht sicher für den Online-Betrieb.
+
+---
+## Usage Instructions / Bedienungsanleitung
+
+**ENGLISH:**  
+1. Open the `lichtplan.html` file in your browser.
+2. Use the on-screen buttons to navigate between scenes, edit settings, and interact with the sliders and LED buttons.
+3. Switch between **Edit Mode** and **Read Mode** using the "Wechsel zu Edit Mode" or "Wechsel zu Read Mode" button.
+4. Changes are automatically saved in your browser’s local storage. You can also export/import the database using the provided buttons.
+
+**DEUTSCH:**  
+1. Öffne die Datei `lichtplan.html` in deinem Browser.
 
 ## Project Structure / Projektstruktur
 
@@ -138,46 +179,6 @@ Das Projekt ist in mehrere Ordner und Dateien unterteilt:
 
 ---
 
-## Installation & Setup / Installation und Einrichtung
-
-**ENGLISH:**  
-Since this project is intended for offline use only, follow these simple steps:
-
-1. **Download the Release ZIP:**  
-   Download the ZIP file from the Git repository release page.
-
-2. **Unzip the File:**  
-   Extract the contents to a folder on your computer.
-
-3. **Run the App Locally:**  
-   Open the `lichtplan-montag.html` file in your web browser by double-clicking it.  
-   **Note:** This project is not designed to run on a server and is not secure for online use.
-
-**DEUTSCH:**  
-Da dieses Projekt ausschließlich offline genutzt werden soll, befolge diese einfachen Schritte:
-
-1. **Release-ZIP herunterladen:**  
-   Lade die ZIP-Datei von der Git-Repository-Release-Seite herunter.
-
-2. **ZIP entpacken:**  
-   Entpacke den Inhalt in einen Ordner auf deinem Computer.
-
-3. **App lokal starten:**  
-   Öffne die Datei `lichtplan-montag.html` in deinem Webbrowser, indem du darauf doppelklickst.  
-   **Hinweis:** Dieses Projekt ist nicht für den Einsatz auf einem Server konzipiert und nicht sicher für den Online-Betrieb.
-
----
-
-## Usage Instructions / Bedienungsanleitung
-
-**ENGLISH:**  
-1. Open the `lichtplan-montag.html` file in your browser.
-2. Use the on-screen buttons to navigate between scenes, edit settings, and interact with the sliders and LED buttons.
-3. Switch between **Edit Mode** and **Read Mode** using the "Wechsel zu Edit Mode" or "Wechsel zu Read Mode" button.
-4. Changes are automatically saved in your browser’s local storage. You can also export/import the database using the provided buttons.
-
-**DEUTSCH:**  
-1. Öffne die Datei `lichtplan-montag.html` in deinem Browser.
 2. Verwende die auf dem Bildschirm angezeigten Buttons, um zwischen Szenen zu wechseln, Einstellungen zu bearbeiten und mit den Slidern sowie LED-Buttons zu interagieren.
 3. Wechsle zwischen **Edit-Mode** und **Read-Mode** mit dem Button „Wechsel zu Edit Mode“ bzw. „Wechsel zu Read Mode“.
 4. Änderungen werden automatisch im Browser gespeichert. Du kannst die Datenbank auch exportieren bzw. importieren, indem du die entsprechenden Buttons verwendest.
@@ -223,7 +224,7 @@ Please refer to the detailed guide in the manual section (see below) for instruc
      ```
      for a horizontal slider layout.
 
-After making any changes, save your files and reload the `lichtplan-montag.html` file in your browser to see the updates.
+After making any changes, save your files and reload the `lichtplan.html` file in your browser to see the updates.
 
 **DEUTSCH:**  
 Siehe die detaillierte Anleitung im Abschnitt oben für Anpassungen:
@@ -262,7 +263,7 @@ Siehe die detaillierte Anleitung im Abschnitt oben für Anpassungen:
      ```
      für ein horizontales Layout.
 
-Nach Änderungen speichere alle Dateien und lade die `lichtplan-montag.html` neu im Browser.
+Nach Änderungen speichere alle Dateien und lade die `lichtplan.html` neu im Browser.
 
 ---
 
