@@ -32,7 +32,7 @@ Since this project is intended for offline use only, follow these simple steps:
    Extract the contents to a folder on your computer.
 
 4. **Run the App Locally:**  
-   Open the `lichtplan-montag.html` file in your web browser by double-clicking it.  
+   Open the `lichtplan.html` file in your web browser by double-clicking it.  
    **Note:** This project is not designed to run on a server and is not secure for online use.
 
 **DEUTSCH:**  
@@ -60,6 +60,9 @@ Da dieses Projekt ausschließlich offline genutzt werden soll, befolge diese ein
 
 **DEUTSCH:**  
 1. Öffne die Datei `lichtplan.html` in deinem Browser.
+2. Verwende die auf dem Bildschirm angezeigten Buttons, um zwischen Szenen zu wechseln, Einstellungen zu bearbeiten und mit den Slidern sowie LED-Buttons zu interagieren.
+3. Wechsle zwischen **Edit-Mode** und **Read-Mode** mit dem Button „Wechsel zu Edit Mode“ bzw. „Wechsel zu Read Mode“.
+4. Änderungen werden automatisch im Browser gespeichert. Du kannst die Datenbank auch exportieren bzw. importieren, indem du die entsprechenden Buttons verwendest.
 
 ## Project Structure / Projektstruktur
 
@@ -176,12 +179,6 @@ Das Projekt ist in mehrere Ordner und Dateien unterteilt:
 
 - **Speichern und Importieren:**  
   Die App speichert automatisch Snapshots der Szenen – aber nur, wenn du die Szenenwechsel-Buttons oder den "Szene zwischenspeichern"-Button benutzt! Außerdem kannst du die gesamte Datenbank als JSON-Datei exportieren oder Daten aus einer solchen Datei importieren.
-
----
-
-2. Verwende die auf dem Bildschirm angezeigten Buttons, um zwischen Szenen zu wechseln, Einstellungen zu bearbeiten und mit den Slidern sowie LED-Buttons zu interagieren.
-3. Wechsle zwischen **Edit-Mode** und **Read-Mode** mit dem Button „Wechsel zu Edit Mode“ bzw. „Wechsel zu Read Mode“.
-4. Änderungen werden automatisch im Browser gespeichert. Du kannst die Datenbank auch exportieren bzw. importieren, indem du die entsprechenden Buttons verwendest.
 
 ---
 
@@ -329,6 +326,3 @@ This tool is intended solely for offline use in a browser. It is not designed fo
 **DEUTSCH:**  
 Dieses Tool ist ausschließlich für die Offline-Nutzung in einem Browser gedacht. Es ist nicht für den sicheren Einsatz auf einem Server konzipiert. Bitte stelle sicher, dass du dies verstehst, bevor du es in einer anderen Umgebung als deiner lokalen Umgebung nutzt.
 
----
-
-Feel free to adjust any sections as needed. Once finalized, you can push the repository to GitHub and share the release ZIP file with other schools. Happy coding!
