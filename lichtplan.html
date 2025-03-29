@@ -1,3 +1,11 @@
+<!--
+Hi! Das ist die Datei die du in einem Internetbrowser öffnen musst.
+Hier wird der großteil der groben Struktur für die Lichtmischer definiert. Das Aussehen - die Farben, Größen etc findest du in der .css Datei.
+Ein paar Elemente wie die einzelenen Slider für die Mischer werden dynamisch mit Javascript generiert, oder sogar in der render.js Datei.
+LichtNotes for oooooold manual DMX Mixers
+
+-->
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -9,9 +17,6 @@
   <link rel="stylesheet" href="css/nouislider.min.css">
 </head>
 <body>
-  <!-- Persistenter Musik-Player-Bereich <div id="persistent-music-player"></div>-->
-  
-  
   <div id="flex-container">
     <div id="content-wrapper">
       <div id="top-wrapper">
@@ -27,11 +32,10 @@
           <button id="toggleMode">Wechsel zu Edit Mode</button>
           <button id="newSzene">Neue Szene einfügen</button>
           <button id="deleteSzene">Szene löschen</button>
+		  <button id="saveSnapshot">Szene speichern</button>
         </div>
-      </div>
-      <!-- Music Section -->
-      
-      
+      </div>      
+       <!-- Steuerungsbereich -->
       <div id="scenepicture">
         <div id="currentPicture">
           <img id="sceneImg" src="" alt="Aktuelles Szenenbild">
@@ -131,8 +135,10 @@
         <button id="exportBtn">Datenbank Speichern</button>
         <input type="file" id="importFile" accept="application/json" style="display:none;">
         <button id="importBtn">Daten importieren</button>
+	
+
 		
-		<span>Zwischenspeichern reicht nicht! Szenendatenbank immer richtig speichern! Und immer Sicherheitskopien machen! Nach dem Importieren ->Lade mit F5 die Seite neu!
+		<span>Zwischenspeichern reicht nicht! Szenendatenbank immer richtig speichern! Und immer Sicherheitskopien machen! Nach dem Importieren ->Lade mit F5 die Seite neu! Wenn du eine Szenendatenbank importierst und die Musikdateien nich angezeigt werden -> wechsele einmal in den Readonly Modus.
       </div>
     </div> <!-- end #content-wrapper -->
 
@@ -146,6 +152,7 @@
   <script src="js/helpers.js"></script>
   <script src="js/render.js"></script>
   <script src="js/events.js"></script>
+
 
 </body>
 </html>
