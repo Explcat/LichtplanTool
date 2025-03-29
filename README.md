@@ -1,6 +1,7 @@
 # LichtplanTool README
+![Here is an overview of the UI](screen-edit-mode.jpg)
 
-Hi! This is a very simple tool to take notes for theater plays at our school. We are running two old analog DMX mixers and one “modern” LED mixer capable of storing lighting scenes in 24 banks. For this project, I have modeled the setup with slider ranges and buttons. I hope you don’t need this because your school has modern equipment 😊. If you do have a use case for it, please note:
+Hi! This is a very simple tool to take notes for theater plays at our school. We are running 2 old analog 12 channel DMX mixers and one “modern” LED mixer capable of storing lighting scenes in 24 banks. For this project, I have modeled the setup with slider ranges and buttons. I hope you don’t need this because your school has modern equipment 😊. If you do have a use case for it, please note:
 
 > This project was pushed out in 6 hours with the help of a large language model doing the heavy code lifting.  
 > It works! It is stable! It relies on some small workarounds in the UI sometimes. Feel free to improve it.  
